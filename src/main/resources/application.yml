@@ -1,0 +1,36 @@
+#default project info followed by actual injected pom-specified values.
+project:
+    name: raad-comparison
+    version: 1.0.0
+    description: Raad Converter Api used to convert all type of doc formate
+info:
+    build:
+        artifact: ${project.artifactId}
+        name: ${project.name}
+        description: ${project.description}
+        version: ${project.version}
+---
+spring:
+    application:
+        name: Converter
+    main:
+        banner-mode: "off"
+    servlet:
+        multipart:
+            maxFileSize: -1
+            maxRequestSize: -1
+            enabled: true
+    profiles:
+        # ${RAAD_API_ENV}
+        active: loc
+
+---
+logging:
+    level:
+        org.jodconverter: info
+
+---
+server:
+    port: 9098
+    servlet:
+        context-path: /api/converter

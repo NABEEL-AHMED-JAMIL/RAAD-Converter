@@ -1,0 +1,10 @@
+jodconverter:
+  local:
+    enabled: true
+    port-numbers: 2002
+    working-dir: /tmp
+    format-options:
+      html:
+        store:
+          TEXT:
+            FilterOptions: EmbedImages
