@@ -62,7 +62,7 @@ public class RaadStreamConverter implements IRaadStreamConverter {
                 //}
             }
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            final DocumentConverter converter = LocalConverter.builder().officeManager(officeManager).storeProperties(getStoreProperties()).build();
+            final DocumentConverter converter = LocalConverter.builder().officeManager(officeManager).build();
             final DocumentFormat sourceFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(sourceFileName));
             final DocumentFormat targetFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(targetFileName));
             converter.convert(inputStream).as(sourceFormat).to(outputStream).as(targetFormat).execute();

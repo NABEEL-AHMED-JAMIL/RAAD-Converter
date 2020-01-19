@@ -31,6 +31,6 @@ logging:
 
 ---
 server:
-    port: 9095
+    port: 9096
     servlet:
         context-path: /api/converter
