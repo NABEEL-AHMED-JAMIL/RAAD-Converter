@@ -2,7 +2,7 @@ FROM maven:3.6.1-jdk-8
 ## Application-confuration
 ADD /target/RAAD-Converter-0.0.1-SNAPSHOT.jar app.jar
 RUN sh -c 'touch RAAD-Converter-0.0.1-SNAPSHOT.jar'
-RUN mkdir /tmp/tomcat static
+VOLUME /tmp
 RUN apt-get update && apt-get -y install \
   libreoffice-common \
   unoconv \

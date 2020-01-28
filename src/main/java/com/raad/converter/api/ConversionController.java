@@ -50,7 +50,7 @@ public class ConversionController {
         return ResponseEntity.ok().headers(headers).body(convertedFile.toByteArray());
     }
 
-    @RequestMapping(value = "/downloadBatchFile", method = RequestMethod.GET)
+    //@RequestMapping(value = "/downloadBatchFile", method = RequestMethod.GET)
     public ResponseEntity<?> downloadBatchFile() throws IOException {
         StringWriter writer = new StringWriter();
         CSVWriter csvWriter = new CSVWriter(writer);

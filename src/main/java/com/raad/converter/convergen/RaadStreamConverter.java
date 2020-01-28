@@ -87,7 +87,6 @@ public class RaadStreamConverter implements IRaadStreamConverter {
         filterDate.put(SelectPdfVersion, new Integer(1));
         filterDate.put(ExportBookmarks, false);
         filterDate.put(ExportNotes, false);
-
         return filterDate;
     }
 }

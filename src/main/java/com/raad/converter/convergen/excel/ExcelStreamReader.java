@@ -66,10 +66,6 @@ public class ExcelStreamReader implements Excel {
                 Iterator<Cell> cellIterator = row.iterator();
                 while (cellIterator.hasNext()) {
                     Cell cell = cellIterator.next();
-                    // issue with the wrap txt
-                    //CellStyle cellStyle = cell.getCellStyle();
-                    //cellStyle.setWrapText(true);
-                    //cell.setCellStyle(cellStyle);
                     Comment comment = cell.getCellComment();
                     if (comment != null) {
                         System.out.println("Comment :- " + comment.getString());
