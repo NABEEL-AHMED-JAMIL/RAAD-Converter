@@ -1,17 +1,22 @@
 package com.raad.converter.api;
 
+import com.opencsv.CSVWriter;
 import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.convergen.ScraperConstant;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.ByteArrayOutputStream;
+
+import java.io.*;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -20,6 +25,12 @@ import java.util.UUID;
 @RequestMapping("/conversion")
 @Api(tags = {"RAAD-Conversion := RAAD-Conversion EndPoint"})
 public class ConversionController {
+
+    public static final String[] HEADER_FILED_BATCH_FILE = new String[] {
+            "job_name","url","bookmark","country_name",
+            "doc_type","execution_type","keywords_include","keywords_exclude",
+            "merge", "lookup_tags","tags_include","tags_exclude","crawling"
+    };
 
     @Autowired
     private RaadStreamConverter raadStreamConverter;
@@ -37,6 +48,27 @@ public class ConversionController {
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + targetFilename);
         headers.setContentType(MediaType.parseMediaType("application/pdf"));
         return ResponseEntity.ok().headers(headers).body(convertedFile.toByteArray());
+    }
+
+    @RequestMapping(value = "/downloadBatchFile", method = RequestMethod.GET)
+    public ResponseEntity<?> downloadBatchFile() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVWriter csvWriter = new CSVWriter(writer);
+        csvWriter.writeNext(HEADER_FILED_BATCH_FILE);
+        if(csvWriter != null) { csvWriter.close(); }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Raad-Master-Data "+new Date()+".csv");
+        headers.setContentType(MediaType.parseMediaType("application/vnd.ms-excel"));
+        return new ResponseEntity(IOUtils.toByteArray(new ByteArrayInputStream(writer.toString().getBytes())), headers, HttpStatus.OK );
+    }
+
+    public static void main(String args[]) {
+        File file = new File("C:\\Users\\Nabeel.Ahmed\\Downloads\\hwp file");
+        StringBuilder builder = new StringBuilder();
+        for(String fileName: file.list()) {
+            builder.append(String.format("<p>%s <a href=\"%s\">%s</a></p>\n", fileName,fileName,fileName));
+        }
+        System.out.println(builder);
     }
 
 }

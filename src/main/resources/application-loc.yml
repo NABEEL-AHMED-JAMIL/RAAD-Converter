@@ -1,3 +1,9 @@
+# d'nt remove this comment
+#https://segmentfault.com/a/1190000015129654
+#https://docs.alfresco.com/6.0/tasks/OOo-subsystems-config.html
+#https://docs.alfresco.com/6.0/concepts/OOoJodconverter-subsystem-props.html
+#//https://github.com/LibreOffice/core/blob/master/filter/source/pdf/pdfexport.cxx#L459
+#jodconverter.connectTimeout=20000
 jodconverter:
   local:
     enabled: true

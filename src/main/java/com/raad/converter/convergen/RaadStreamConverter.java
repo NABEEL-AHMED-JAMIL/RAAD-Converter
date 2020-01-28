@@ -23,9 +23,14 @@ import java.util.HashMap;
 @Scope(value="prototype")
 public class RaadStreamConverter implements IRaadStreamConverter {
 
+//    0: PDF 1.4 (default selection)
+//    1: PDF/A-1 (ISO 19005-1:2005)
+//    Example: new Integer(1)
     private String FilterData = "FilterData";
     private String IsSkipEmptyPages = "IsSkipEmptyPages";
     private String SelectPdfVersion = "SelectPdfVersion";
+    private String ExportBookmarks = "ExportBookmarks";
+    private String ExportNotes = "ExportNotes";
 
     @Autowired
     private HwpPdfExtractor hwpPdfExtractor;
@@ -53,7 +58,7 @@ public class RaadStreamConverter implements IRaadStreamConverter {
 				// looking for hwp file handling
                 //String url = this.hwpPdfExtractor.startProcessForUrl(sourceFileName);
                 //if(url != null) {
-                    // download file and return out-byte-stream
+                    //download file and return out-byte-stream
                 //    return this.hwpPdfExtractor.downloadFile(url, new ByteArrayOutputStream());
                 //} else {
                     // output stream size zero it's mean file not convert through endpoint so we do with own customs scrapper
@@ -62,7 +67,7 @@ public class RaadStreamConverter implements IRaadStreamConverter {
                 //}
             }
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            final DocumentConverter converter = LocalConverter.builder().officeManager(officeManager).build();
+            final DocumentConverter converter = LocalConverter.builder().officeManager(officeManager).storeProperties(getStoreProperties()).build();
             final DocumentFormat sourceFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(sourceFileName));
             final DocumentFormat targetFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(targetFileName));
             converter.convert(inputStream).as(sourceFormat).to(outputStream).as(targetFormat).execute();
@@ -79,7 +84,10 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     private HashMap<String, Object> getFilterData() {
         HashMap<String, Object> filterDate = new HashMap<>();
         filterDate.put(IsSkipEmptyPages, new Boolean(true));
-        filterDate.put(SelectPdfVersion, new Integer(0));
+        filterDate.put(SelectPdfVersion, new Integer(1));
+        filterDate.put(ExportBookmarks, false);
+        filterDate.put(ExportNotes, false);
+
         return filterDate;
     }
 }

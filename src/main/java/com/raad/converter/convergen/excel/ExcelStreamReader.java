@@ -74,7 +74,6 @@ public class ExcelStreamReader implements Excel {
                     if (comment != null) {
                         System.out.println("Comment :- " + comment.getString());
                         cell.removeCellComment();
-
                     }
                 }
             }

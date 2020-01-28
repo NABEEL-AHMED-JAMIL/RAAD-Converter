@@ -20,7 +20,6 @@
 		<java.version>1.8</java.version>
 		<jodconverter.version>4.2.2</jodconverter.version>
 		<swagger.version>2.9.2</swagger.version>
-<!--		<maven.test.skip>true</maven.test.skip>-->
 	</properties>
 
 	<!--https://mvnrepository.com/artifact/org.jodconverter-->
@@ -106,6 +105,12 @@
 			<version>4.0.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>4.1</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.jodconverter/jodconverter-spring-boot-starter -->
 		<dependency>
 			<groupId>org.jodconverter</groupId>
@@ -145,6 +150,31 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<!--mvn package dockerfile:build-->
+				<!--mvn Dockerfile:push-->
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<configuration>
+					<!-- replace `callicoder` with your docker id-->
+					<repository>NABEEL-AHMED-JAMIL/RAAD-Converter</repository>
+					<tag>${project.version}</tag>
+					<buildArgs>
+						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+					</buildArgs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default</id>
+						<phase>install</phase>
+						<goals>
+							<goal>build</goal>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

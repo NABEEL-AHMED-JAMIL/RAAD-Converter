@@ -6,6 +6,7 @@ import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.openqa.selenium.By;
@@ -32,6 +33,9 @@ public class HwpPdfExtractor {
     private WebDriver webDriver;
     private JavascriptExecutor javascriptExecutor;
     private int max_Attempt = 15;
+
+    //@Value("")
+    private String driverPath;
 
     public HwpPdfExtractor() { }
 
@@ -78,7 +82,6 @@ public class HwpPdfExtractor {
                         for(WebElement link:allLinks){
                             System.out.println(link.getText() + " - " + link.getAttribute("href"));
                         }
-
                         fileUrl = "url";
                         this.webDriver.findElement(By.xpath("//*[@id=\"container\"]/div[2]/div[1]/div/a[1]")).click();
                         Thread.sleep(1000);
@@ -100,9 +103,7 @@ public class HwpPdfExtractor {
     // stop the browser on application end
     public void stopBrowser() {
         log.info("Stop Browser");
-        if(this.webDriver != null) {
-            this.webDriver.close();
-        }
+        if(this.webDriver != null) { this.webDriver.close(); }
     }
 
     // download file from url

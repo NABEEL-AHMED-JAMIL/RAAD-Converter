@@ -47,6 +47,12 @@ public interface ScraperConstant {
 	public static final String HWP = "hwp";
 	public static final String HWP_EXTENSION = ".hwp";
 
+	public static final String CSV = "csv";
+	public static final String CSV_EXTENSION = ".csv";
+
+	public static final String XML = "xml";
+	public static final String XML_EXTENSION = ".xml";
+
 	public static final String ALL = "all";
 	public static final String HTML = "html";
 
