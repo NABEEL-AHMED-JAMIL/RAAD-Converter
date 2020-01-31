@@ -17,7 +17,7 @@ public class SchedulerCore {
     @Autowired
     private FtpTempFileSender ftpTempFileSender;
 
-    @Scheduled(fixedDelay = 5000)
+    //@Scheduled(fixedDelay = 5000)
     public void scheduleFixedDelayTask() {
         try {
             this.ftpTempFileSender.sendFileToSend();

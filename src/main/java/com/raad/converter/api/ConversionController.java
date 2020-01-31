@@ -3,6 +3,7 @@ package com.raad.converter.api;
 import com.opencsv.CSVWriter;
 import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.convergen.ScraperConstant;
+import com.raad.converter.util.FtpFileExchange;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -33,14 +34,17 @@ public class ConversionController {
     };
 
     @Autowired
+    private FtpFileExchange ftpFileExchange;
+
+    @Autowired
     private RaadStreamConverter raadStreamConverter;
 
     @RequestMapping(path = "file-converter/v1", method = RequestMethod.POST)
     public ResponseEntity<?> convertPdf(@RequestParam("file") final MultipartFile multipart) throws Exception {
         log.info("File Content Type :- " + multipart.getContentType());
         // will think to take the file in dir or not delete
-        ByteArrayOutputStream convertedFile = this.raadStreamConverter.doConvert(multipart.getInputStream(),
-                multipart.getOriginalFilename(), UUID.randomUUID() + ScraperConstant.PDF_EXTENSION);
+        ByteArrayOutputStream convertedFile = this.raadStreamConverter.doConvert(multipart.getInputStream(), multipart.getOriginalFilename(), UUID.randomUUID() + ScraperConstant.PDF_EXTENSION);
+        this.ftpFileExchange.uploadFile(new ByteArrayInputStream(convertedFile.toByteArray()), UUID.randomUUID()+ ScraperConstant.PDF_EXTENSION);
         final HttpHeaders headers = new HttpHeaders();
         String fileName = FilenameUtils.getBaseName(multipart.getOriginalFilename());
         String targetFilename = String.format("%s.%s", fileName, ScraperConstant.PDF);

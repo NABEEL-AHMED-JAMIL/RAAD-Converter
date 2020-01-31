@@ -30,6 +30,9 @@ public class FtpFileExchange {
     private final Integer TENSECONDS  = 10*1000; // 10 second
     // mean directory path for default server
     private String directoryPath;
+    public final String P = "P";
+    private final String SSL = "SSL";
+    private final String TLS = "TLS";
     private String host = "ftp.dlptest.com";
     private Integer port = 21;
     private String user = "dlpuser@dlptest.com";
@@ -93,7 +96,7 @@ public class FtpFileExchange {
                     public void checkClientTrusted(X509Certificate[] certs, String authType) { return; }
                 }
             };
-            SSLContext sc = SSLContext.getInstance("SSL");
+            SSLContext sc = SSLContext.getInstance(SSL);
             sc.init(null, trustAllCerts, null);
             this.ftpsClient  = new ModifiedFTPSClient(true, sc);
         } else {
@@ -125,7 +128,7 @@ public class FtpFileExchange {
         }
         this.ftpsClient.enterLocalPassiveMode();
         this.ftpsClient.execPBSZ(0);
-        this.ftpsClient.execPROT("P");
+        this.ftpsClient.execPROT(P);
         this.ftpsClient.setFileType(FTP.BINARY_FILE_TYPE);
         // show the directory where file exist
         log.info("Current Directory " + this.ftpsClient.printWorkingDirectory());
@@ -184,10 +187,10 @@ public class FtpFileExchange {
     private class ModifiedFTPSClient extends FTPSClient {
 
         public ModifiedFTPSClient() {
-            super("TLS", false);
+            super(TLS, false);
         }
 
-        public ModifiedFTPSClient(boolean isImplicit) { super("TLS", isImplicit); }
+        public ModifiedFTPSClient(boolean isImplicit) { super(TLS, isImplicit); }
 
         // TLS will be default there in ftps-client
         public ModifiedFTPSClient(boolean isImplicit, SSLContext sc) { super(isImplicit, sc); }

@@ -21,7 +21,6 @@ public class FtpTempFileSender {
 
     public void sendFileToSend() {
         try {
-            //this.ftpFileExchange.setDirectoryPath(String.format("/docker/%s", UUID.randomUUID()));
             for(int i=0; i<10; i++) {
                 final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 this.getMockUpdate(byteArrayOutputStream);
