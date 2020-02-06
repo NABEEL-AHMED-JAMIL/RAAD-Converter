@@ -9,6 +9,7 @@ RUN apt-get update && apt-get -y install \
     procps \
     && apt-get -y install libreoffice --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+EXPOSE 9096
 
 #FROM maven:3.6.1-jdk-8
 ### Application-confuration
@@ -24,7 +25,7 @@ RUN apt-get update && apt-get -y install \
 #  fonts-lmodern fonts-lyx fonts-sil-gentium fonts-texgyre fonts-tlwg-purisa fonts-opensymbol && \
 #  rm -rf /var/lib/apt/lists/*
 #ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "app.jar"]
-EXPOSE 9096
+
 #
 ##RUN wget http://downloadarchive.documentfoundation.org/libreoffice/old/6.3.3.1/deb/x86_64/LibreOffice_6.3.3.1_Linux_x86-64_deb.tar.gz -O libo.tar.gz
 ##RUN apt update \
