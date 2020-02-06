@@ -44,7 +44,7 @@ public class ConversionController {
         log.info("File Content Type :- " + multipart.getContentType());
         // will think to take the file in dir or not delete
         ByteArrayOutputStream convertedFile = this.raadStreamConverter.doConvert(multipart.getInputStream(), multipart.getOriginalFilename(), UUID.randomUUID() + ScraperConstant.PDF_EXTENSION);
-        this.ftpFileExchange.uploadFile(new ByteArrayInputStream(convertedFile.toByteArray()), UUID.randomUUID()+ ScraperConstant.PDF_EXTENSION);
+        //this.ftpFileExchange.uploadFile(new ByteArrayInputStream(convertedFile.toByteArray()), UUID.randomUUID()+ ScraperConstant.PDF_EXTENSION);
         final HttpHeaders headers = new HttpHeaders();
         String fileName = FilenameUtils.getBaseName(multipart.getOriginalFilename());
         String targetFilename = String.format("%s.%s", fileName, ScraperConstant.PDF);
