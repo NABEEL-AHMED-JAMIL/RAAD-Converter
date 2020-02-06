@@ -6,8 +6,6 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.net.ssl.*;
 import java.io.IOException;
@@ -82,7 +80,6 @@ public class FtpFileExchange {
         return this;
     }
 
-    @PostConstruct
     public Boolean connectionOpen() throws IOException, NoSuchAlgorithmException, KeyManagementException {
         Boolean isLogin = false;
         if(this.port > 100) {
