@@ -69,7 +69,7 @@ public class SocketServerComponent {
         return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
     }
 
-    @Scheduled(fixedDelay=1000)
+    //@Scheduled(fixedDelay=500)
     public void updateEmployeeInventory(){
         try {
             this.sendSocketEventToClient(UUID.randomUUID().toString());
