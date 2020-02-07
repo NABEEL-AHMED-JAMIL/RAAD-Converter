@@ -49,11 +49,10 @@ import org.slf4j.LoggerFactory;
 
 
 public abstract class HwpTextExtractorV5 {
-	protected static Logger log = LoggerFactory
-			.getLogger(HwpTextExtractorV5.class);
 
-	private static final byte[] HWP_V5_SIGNATURE = "HWP Document File"
-			.getBytes();
+	protected static Logger log = LoggerFactory.getLogger(HwpTextExtractorV5.class);
+
+	private static final byte[] HWP_V5_SIGNATURE = "HWP Document File".getBytes();
 
 	private static final int[] HWP_CONTROL_CHARS = new int[] { 0, 10, 13, 24,
 			25, 26, 27, 28, 29, 30, 31 };

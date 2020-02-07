@@ -59,29 +59,11 @@ public interface ScraperConstant {
 	public static  final String CONTENT_TYPE = "Content-Type";
 
 	public static final List<String> headerTypeForPPT = new ArrayList<String>(Arrays.asList("application/vnd.ms-powerpoint", "application/vnd.openxmlformats-officedocument.presentationml.presentation"));
-
 	public static final List<String> headerTypeForTXT = new ArrayList<String>(Arrays.asList("text/plain", "application/msword", "application/vnd.oasis.opendocument.text"));
-
-	public static final List<String> headerTypeForHtml = new ArrayList<String>(Arrays.asList("Content-Type",
-			"Content-type"));
-
-	public static final List<String> headerValuesForPdf = new ArrayList<String>(
-			Arrays.asList("application/pdf", "application/octet-stream", "application/octet-stream;charset=UTF-8",
-					"application/octet-stream;charset=utf-8","application/pdf;charset=UTF-8"));
-
-	// docx, doc|dot => msword
-	public static final List<String> headerValuesForDoc = new ArrayList<String>(Arrays.asList(
-			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-			"application/octet-stream", "application/octet-stream;charset=UTF-8", "application/rtf;charset=UTF-8"));
-
-	public static final List<String> headerValuesForHtml = new ArrayList<String>(
-			Arrays.asList("text/html; charset=UTF-8", "text/html;charset=UTF-8", "text/html; charset=utf-8",
-					"text/html;charset=utf-8", "text/html", "text/html; charset=ISO-8859-1"));
-
-	// XLS, XLSX
-	public static final List<String> headerValuesForXLS = new ArrayList<String>(
-			Arrays.asList("application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-
+	public static final List<String> headerValuesForPdf = new ArrayList<String>(Arrays.asList("application/pdf", "application/octet-stream", "application/octet-stream;charset=UTF-8", "application/octet-stream;charset=utf-8","application/pdf;charset=UTF-8"));
+	public static final List<String> headerValuesForDoc = new ArrayList<String>(Arrays.asList("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/octet-stream", "application/octet-stream;charset=UTF-8", "application/rtf;charset=UTF-8"));
+	public static final List<String> headerValuesForHtml = new ArrayList<String>(Arrays.asList("text/html; charset=UTF-8", "text/html;charset=UTF-8", "text/html; charset=utf-8", "text/html;charset=utf-8", "text/html", "text/html; charset=ISO-8859-1"));// XLS, XLSX
+	public static final List<String> headerValuesForXLS = new ArrayList<String>(Arrays.asList("application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
 
 	public static final int SCHEDULER_CRON_TIME_IN_MINUTES=2;
 

@@ -23,14 +23,15 @@ spring:
     profiles:
         # ${RAAD_API_ENV}
         active: loc
-
 ---
 logging:
     level:
         org.jodconverter: info
-
+---
+file:
+    downloadLocation: \tmp
 ---
 server:
-    port: 9096
+    port: 9097
     servlet:
         context-path: /api/converter

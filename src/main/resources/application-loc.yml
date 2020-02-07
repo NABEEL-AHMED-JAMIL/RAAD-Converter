@@ -5,17 +5,34 @@
 #//https://github.com/LibreOffice/core/blob/master/filter/source/pdf/pdfexport.cxx#L459
 #jodconverter.connectTimeout=20000
 jodconverter:
-  local:
-    enabled: true
-    port-numbers: 2002
-    kill-existing-process: true
-    process-timeout: 180000
-    process-retry-interval: 1000
-    max-tasks-per-process: 20
-    task-execution-timeout: 140000
-    task-queue-timeout: 90000
-    format-options:
-      html:
-        store:
-          TEXT:
-            FilterOptions: EmbedImages
+    local:
+        enabled: true
+        port-numbers: 2003
+        kill-existing-process: true
+        process-timeout: 180000
+        process-retry-interval: 1000
+        max-tasks-per-process: 20
+        task-execution-timeout: 140000
+        task-queue-timeout: 90000
+        format-options:
+            html:
+                store:
+                    TEXT:
+                        FilterOptions: EmbedImages
+---
+spring:
+    datasource:
+        url: jdbc:h2:mem:raad-db
+    driverClassName: org.h2.Driver
+    username: user
+    password:
+    h2:
+        console:
+            enabled: true
+            path: /h2
+jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+---
+socket:
+    host: 0.0.0.0
+    port: 889

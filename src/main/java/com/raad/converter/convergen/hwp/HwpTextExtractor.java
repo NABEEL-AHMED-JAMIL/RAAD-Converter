@@ -25,13 +25,8 @@
 package com.raad.converter.convergen.hwp;
 
 import java.io.*;
-
-import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.convergen.hwp.v3.HwpTextExtractorV3;
 import com.raad.converter.convergen.hwp.v5.HwpTextExtractorV5;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,20 +37,12 @@ public abstract class HwpTextExtractor {
 	public static InputStream extract(InputStream inputStream) throws Exception {
 		Writer writer = new StringWriter();
 		boolean success = HwpTextExtractorV5.extractText(inputStream, writer);
-		if (!success)
+		if (!success) {
 			success = HwpTextExtractorV3.extractText(inputStream, writer);
-
+		}
 		if(!success) {
 			throw new Exception("File not a hwp format");
 		}
-
-		return new ByteArrayInputStream(writer.toString().getBytes("UTF8"));
-	}
-
-	public static void main(String args[]) throws Exception {
-		File file = new File("C:\\Users\\Nabeel.Ahmed\\Desktop\\RAAD\\RAAD-Converter\\src\\main\\resources\\hwp\\example.hwp");
-		InputStream inputStream = HwpTextExtractor.extract(new FileInputStream(file));
-		FileUtils.copyInputStreamToFile(inputStream, new File("C:\\Users\\Nabeel.Ahmed\\Downloads\\example.rtf"));
-		System.out.println("Process Done");
+		return new ByteArrayInputStream(writer.toString().getBytes());
 	}
 }

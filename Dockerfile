@@ -1,5 +1,6 @@
 FROM maven:3.6.1-jdk-8
 ADD target/RAAD-Converter-0.0.1-SNAPSHOT.jar app.jar
+# copy local fount for remove utf-8 issue
 COPY Fonts /usr/share/fonts
 ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "app.jar"]
 #==================Liber-Office=============
@@ -9,7 +10,8 @@ RUN apt-get update && apt-get -y install \
     procps \
     && apt-get -y install libreoffice --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
-EXPOSE 9096
+# 889 for websecoket
+EXPOSE 9096 889
 
 #FROM maven:3.6.1-jdk-8
 ### Application-confuration
