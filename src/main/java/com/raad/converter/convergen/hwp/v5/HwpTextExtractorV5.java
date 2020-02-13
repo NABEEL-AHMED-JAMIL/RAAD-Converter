@@ -54,13 +54,9 @@ public abstract class HwpTextExtractorV5 {
 
 	private static final byte[] HWP_V5_SIGNATURE = "HWP Document File".getBytes();
 
-	private static final int[] HWP_CONTROL_CHARS = new int[] { 0, 10, 13, 24,
-			25, 26, 27, 28, 29, 30, 31 };
-	private static final int[] HWP_INLINE_CHARS = new int[] { 4, 5, 6, 7, 8, 9,
-			19, 20 };
-	private static final int[] HWP_EXTENDED_CHARS = new int[] { 1, 2, 3, 11,
-			12, 14, 15, 16, 17, 18, 21, 22, 23 };
-
+	private static final int[] HWP_CONTROL_CHARS = new int[] { 0, 10, 13, 24, 25, 26, 27, 28, 29, 30, 31 };
+	private static final int[] HWP_INLINE_CHARS = new int[] { 4, 5, 6, 7, 8, 9, 19, 20 };
+	private static final int[] HWP_EXTENDED_CHARS = new int[] { 1, 2, 3, 11, 12, 14, 15, 16, 17, 18, 21, 22, 23 };
 	private static final int HWPTAG_BEGIN = 0x010;
 
 	// extract text first check the file type if the file type is 5 then this file process
@@ -108,7 +104,6 @@ public abstract class HwpTextExtractorV5 {
 		DirectoryNode root = fs.getRoot();
 		Entry headerEntry = root.getEntry("FileHeader");
 		if (!headerEntry.isDocumentEntry()) { return null; }
-
 		byte[] header = new byte[256];
 		DocumentInputStream headerStream = new DocumentInputStream((DocumentEntry) headerEntry);
 		try {
@@ -140,19 +135,14 @@ public abstract class HwpTextExtractorV5 {
 		Iterator<Entry> iterator = ((DirectoryEntry) bodyText).getEntries();
 		while (iterator.hasNext()) {
 			Entry entry = iterator.next();
-			if (entry.getName().startsWith("Section")
-					&& entry instanceof DocumentEntry) {
+			if (entry.getName().startsWith("Section") && entry instanceof DocumentEntry) {
 				log.debug("extract {}", entry.getName());
-
-				InputStream input = new DocumentInputStream(
-						(DocumentEntry) entry);
+				InputStream input = new DocumentInputStream((DocumentEntry) entry);
 				try {
-					if (header.compressed)
-						input = new InflaterInputStream(input, new Inflater(
-								true));
-
+					if (header.compressed) {
+						input = new InflaterInputStream(input, new Inflater(true));
+					}
 					HwpStreamReader sectionStream = new HwpStreamReader(input);
-
 					extractText(sectionStream, writer);
 				} finally {
 					try {
@@ -168,8 +158,6 @@ public abstract class HwpTextExtractorV5 {
 	}
 
 	/**
-	 * 텍스트 추출
-	 *
 	 * @param writer
 	 *
 	 * @return
@@ -177,20 +165,17 @@ public abstract class HwpTextExtractorV5 {
 	 */
 	private static void extractViewText(FileHeader header, POIFSFileSystem fs, Writer writer) throws IOException {
 		DirectoryNode root = fs.getRoot();
-
 		Entry bodyText = root.getEntry("ViewText");
-		if (bodyText == null || !bodyText.isDirectoryEntry())
+		if (bodyText == null || !bodyText.isDirectoryEntry()) {
 			throw new IOException("Invalid ViewText");
-
+		}
 		Iterator<Entry> iterator = ((DirectoryEntry) bodyText).getEntries();
 		while (iterator.hasNext()) {
 			Entry entry = iterator.next();
 			if (entry.getName().startsWith("Section") && entry instanceof DocumentEntry) {
-
 				log.debug("extract {}", entry.getName());
 				InputStream input = new DocumentInputStream((DocumentEntry) entry);
 
-				// FIXME 섹션마다 키가 있는가?
 				Key key = readKey(input);
 				try {
 					input = createDecryptStream(input, key);
@@ -284,8 +269,7 @@ public abstract class HwpTextExtractorV5 {
 			}
 
 			if (buf.length() > 0) {
-				log.debug("TAG[{}]({}):{} [{}]", new Object[] { tag.id,
-						tag.level, tag.length, buf });
+				log.debug("TAG[{}]({}):{} [{}]", new Object[] { tag.id, tag.level, tag.length, buf });
 			}
 		}
 	}
@@ -302,7 +286,6 @@ public abstract class HwpTextExtractorV5 {
 		// log.debug("각줄에 대한 align정보수={}", sectionStream.uint16());
 		// log.debug("문단 Instance ID={}", sectionStream.uint32());
 		// sectionStream.ensureSkip(2);
-
 		sectionStream.ensureSkip(length);
 	}
 
@@ -314,10 +297,8 @@ public abstract class HwpTextExtractorV5 {
 	 * @param buf
 	 * @throws IOException
 	 */
-	private static void writeParaText(HwpStreamReader sectionStream,
-			long datasize, StringBuffer buf) throws IOException {
+	private static void writeParaText(HwpStreamReader sectionStream, long datasize, StringBuffer buf) throws IOException {
 		int[] chars = sectionStream.uint16((int) (datasize / 2));
-
 		for (int index = 0; index < chars.length; index++) {
 			int ch = chars[index];
 			if (Arrays.binarySearch(HWP_INLINE_CHARS, ch) >= 0) {
@@ -335,50 +316,38 @@ public abstract class HwpTextExtractorV5 {
 		}
 	}
 
-	private static boolean readTag(HwpStreamReader sectionStream, TagInfo tag)
-			throws IOException {
+	private static boolean readTag(HwpStreamReader sectionStream, TagInfo tag) throws IOException {
 		// p.24
-
 		long recordHeader = sectionStream.uint32();
-		if (recordHeader == -1)
-			return false;
-
+		if (recordHeader == -1) { return false; }
 		// log.debug("Record Header={} [{}]", recordHeader,
 		// Long.toHexString(recordHeader));
-
 		tag.id = recordHeader & 0x3FF;
 		tag.level = (recordHeader >> 10) & 0x3FF;
 		tag.length = (recordHeader >> 20) & 0xFFF;
-
 		// 확장 데이터 레코드 p.24
-		if (tag.length == 0xFFF)
-			tag.length = sectionStream.uint32();
-
+		if (tag.length == 0xFFF) { tag.length = sectionStream.uint32(); }
 		return true;
 	}
 
-	static class FileHeader {
+	public static class FileHeader {
 		HwpVersion version;
 		boolean compressed; // bit 0
 		boolean encrypted; // bit 1
 		boolean viewtext; // bit 2
 	}
 
-	static class TagInfo {
+	public static class TagInfo {
 		long id;
 		long level;
 		long length;
 	}
 
-	static class HwpVersion {
+	public static class HwpVersion {
 		int m;
 		int n;
 		int p;
 		int r;
-
-		public String toString() {
-			return String.format("%d.%d.%d.%d", m, n, p, r);
-		}
 
 		public static HwpVersion parseVersion(long longVersion) {
 			HwpVersion version = new HwpVersion();
@@ -387,6 +356,10 @@ public abstract class HwpTextExtractorV5 {
 			version.p = (int) ((longVersion & 0x0000FF00L) >> 8);
 			version.r = (int) ((longVersion & 0x000000FFL));
 			return version;
+		}
+
+		public String toString() {
+			return String.format("%d.%d.%d.%d", m, n, p, r);
 		}
 	}
 
