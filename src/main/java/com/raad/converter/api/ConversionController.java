@@ -2,10 +2,14 @@ package com.raad.converter.api;
 
 import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.convergen.ScraperConstant;
-import com.raad.converter.domain.pojo.RaadConverter;
+import com.raad.converter.convergen.xml.XmlOutTagInfo;
+import com.raad.converter.domain.dto.ResponseDTO;
+import com.raad.converter.domain.dto.XmlMakerRequest;
+import com.raad.converter.domain.dto.XmlRequest;
 import com.raad.converter.util.ExceptionUtil;
 import com.raad.converter.util.LocalFileHandler;
 import com.raad.converter.util.SocketServerComponent;
+import com.raad.converter.util.Util;
 import io.swagger.annotations.Api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,11 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.sql.Timestamp;
+
 
 
 @RestController
 @RequestMapping("/conversion")
+@CrossOrigin(origins = "http://localhost:4200")
 @Api(tags = {"RAAD-Conversion := RAAD-Conversion EndPoint"})
 public class ConversionController {
 
@@ -31,6 +36,8 @@ public class ConversionController {
 
     private String PDF_STORE = "pdf";
 
+    @Autowired
+    private XmlOutTagInfo outTagInfo;
     @Autowired
     private RaadStreamConverter raadStreamConverter;
     @Autowired
@@ -83,6 +90,37 @@ public class ConversionController {
         } catch (Exception ex) {
             this.socketServerComponent.sendSocketEventToClient("Error :- " + ExceptionUtil.getRootCauseMessage(ex));
             throw ex;
+        }
+    }
+
+    @RequestMapping(path = "isValidXmlOrUrl", method = RequestMethod.POST)
+    // note d'nt add requested annotation in this request
+    public ResponseEntity<?> isValidXmlOrUrl(XmlRequest xmlRequest) {
+        try {
+            //&& xmlRequest.getFile() != null
+            if(Util.urlValidator(xmlRequest.getUrl())) {
+                return ResponseEntity.ok().body(new ResponseDTO("Success Process", this.outTagInfo.xmlTagResponseDot(xmlRequest)));
+            } else {
+                return ResponseEntity.badRequest().body(new ResponseDTO("Request Detail Should No Be Null", null));
+            }
+        } catch (Exception ex) {
+            logger.error("isValidXmlOrUrl -- Error occurred " + ex);
+            return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+        }
+    }
+
+    @RequestMapping(path = "xmlCreateChecker",  method = RequestMethod.POST)
+    // note d'nt add requested annotation in this request
+    public ResponseEntity<?> isValidXmlCreate(@RequestBody XmlMakerRequest xmlMakerRequest) {
+        try {
+            if(Util.urlValidator(xmlMakerRequest.getUrl()) && xmlMakerRequest.getTags() != null) {
+                return ResponseEntity.ok().body(new ResponseDTO( "Success Process", this.outTagInfo.makeXml(xmlMakerRequest)));
+            } else {
+                return ResponseEntity.badRequest().body(new ResponseDTO("Request Detail Should No Be Null", "Wrong Input"));
+            }
+        } catch (Exception ex) {
+            logger.error("isValidXmlOrUrl -- Error occurred " + ex);
+            return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
         }
     }
 

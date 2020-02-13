@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<articular>
+	<itemId>#container-article > h1</itemId>
+	<title>#post-content-metadata > span.post-metadata.dt-green > span > em > time</title>
+	<source>#post-content-metadata > span:nth-child(3)</source>
+	<date>#content-L2 > span > p:nth-child(1)</date>
+	<url>#content-L2 > span > pre</url>
+	<body>#content-L2 > span > pre</body>
+</articular>

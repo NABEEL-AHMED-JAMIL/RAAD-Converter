@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.corundumstudio.socketio.HandshakeData;
@@ -16,8 +17,8 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 
-
 @Component
+@Scope("prototype")
 public class SocketServerComponent {
 
     public Logger logger = LogManager.getLogger(SocketServerComponent.class);
@@ -29,7 +30,7 @@ public class SocketServerComponent {
     @Autowired
     private SocketIOServer socketIOServer;
 
-    @PostConstruct
+    //@PostConstruct
     public void init(){
         logger.info("===========>>>>>>>>>>>>>>>>>SocketServerComponent-Start<<<<<<<<<<<<<<==================");
         this.socketIOServer.addConnectListener(onConnected());
