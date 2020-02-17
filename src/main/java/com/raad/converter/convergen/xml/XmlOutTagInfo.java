@@ -5,10 +5,7 @@ import com.raad.converter.domain.dto.*;
 import com.raad.converter.util.HtmlAsDocument;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jsoup.internal.StringUtil;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -40,7 +37,7 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
     public XmlTagResponseDTO xmlTagResponseDot(XmlRequest xmlRequest) throws Exception {
         logger.info("Process For Xml Tag Start");
         XmlTagResponseDTO xmlTagResponseDto = new XmlTagResponseDTO();
-        xmlTagResponseDto.setTagDetails(getTableTagDetail(xmlRequest.getUrl()));
+        //xmlTagResponseDto.setTagDetails(getTableTagDetail(xmlRequest.getUrl()));
         // if file then process of parse else skip that part
         if(xmlRequest.getFile() != null) {
             xmlTagResponseDto.setTagInfos(getTagInfo(convertMultiPartToFile(xmlRequest.getFile())));
@@ -70,7 +67,7 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
                         child = xmlDoc.createElementNS(BLANK, tag_name);
                         // element have value than add else not need
                         if(html_tag != null && !html_tag.equals(BLANK)) {
-                            child.appendChild(xmlDoc.createTextNode(htmlDocument.select(html_tag).text()));
+                            child.appendChild(xmlDoc.createTextNode(getText(htmlDocument, html_tag)));
                         }
                         xmlDoc.appendChild(child);
                         isParent = false;
@@ -85,8 +82,7 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
                                 if(node != null && (tag_name != null && !tag_name.equals(BLANK))) {
                                     child = xmlDoc.createElement(tag_name);
                                     if(html_tag != null && !html_tag.equals(BLANK)) {
-                                        String text = htmlDocument.select(html_tag).text();
-                                        child.appendChild(xmlDoc.createTextNode(text != null ? text: BLANK));
+                                        child.appendChild(xmlDoc.createTextNode(getText(htmlDocument, html_tag)));
                                     }
                                     node.appendChild(child);
                                 }
@@ -96,7 +92,7 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
                                 if(tag_name != null && !tag_name.equals(BLANK)) {
                                     child = xmlDoc.createElement(tag_name);
                                     if(html_tag != null && !html_tag.equals(BLANK)) {
-                                        child.appendChild(xmlDoc.createTextNode(htmlDocument.select(html_tag).text()));
+                                        child.appendChild(xmlDoc.createTextNode(getText(htmlDocument, html_tag)));
                                     }
                                     parent.appendChild(child);
                                     xmlDoc.getDocumentElement().appendChild(parent);
@@ -106,7 +102,7 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
                             // main root level child
                             child = xmlDoc.createElement(tag_name);
                             if(html_tag != null && !html_tag.equals(BLANK)) {
-                                child.appendChild(xmlDoc.createTextNode(htmlDocument.select(html_tag).text()));
+                                child.appendChild(xmlDoc.createTextNode(getText(htmlDocument, html_tag)));
                             }
                             xmlDoc.getDocumentElement().appendChild(child);
                         }
@@ -128,35 +124,13 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
         return xml;
     }
 
-    // method use to generate the tags
-    private Set<TableTagDetail> getTableTagDetail(String url) throws Exception {
-        Set<TableTagDetail> tags = new LinkedHashSet<>();
-        Document document = this.htmlAsDocument.getHtml(url, BODY);
-        if(document != null) {
-            Elements table_element = document.getElementsByTag(TD);
-            for (Element td: table_element) {
-                TableTagDetail tableTagDetail = new TableTagDetail();
-                tableTagDetail.setTagKey(td.text());
-                tableTagDetail.setTagValue(getCssPath(td).substring(ROOT_REMOVES.length()));
-                tags.add(tableTagDetail);
-            }
+    public String getText(Document htmlDocument, String html_tag) {
+        try {
+            String text = htmlDocument.select(html_tag).text();
+            return text != null && !text.equals("") ? text : html_tag;
+        } catch (Exception ex) {
+            return html_tag;
         }
-        return tags;
-    }
-
-    // method use to get the css path of html table
-    private String getCssPath(Element el) {
-        if(el == null) { return BLANK; }
-        if(!el.id().isEmpty()) { return HASH + el.id(); }
-        StringBuilder selector = new StringBuilder(el.tagName());
-        String classes = StringUtil.join(el.classNames(), DOT);
-        if(!classes.isEmpty()) { selector.append(DOT).append(classes); }
-        if(el.parent() == null) { return selector.toString(); }
-        selector.insert(0, GREATER_SIGN);
-        if(el.parent().select(selector.toString()).size() > 1) {
-            selector.append(String.format(NTH_CHILD, el.elementSiblingIndex() + 1));
-        }
-        return getCssPath(el.parent()) + selector.toString();
     }
 
     // method use to parse the xml and make the tag for whole xml
@@ -165,23 +139,40 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
         try {
             org.w3c.dom.Document document = this.getBuilder().parse(file);
             document.getDocumentElement().normalize();
-            NodeList nodeList= document.getElementsByTagName(START);
-            for (int i=0; i<nodeList.getLength(); i++) {
-                Node element = nodeList.item(i);
-                TagInfo tagInfo = new TagInfo();
-                if(i==0) {
-                    // first node so his parent is document so no need to add
-                    tagInfo.setTag_name(element.getNodeName());
-                } else {
-                    tagInfo.setTag_name(element.getNodeName().trim());
-                    tagInfo.setParent_tag(element.getParentNode().getNodeName().trim());
-                    // content value of xml tag if any else left empty
-                    if(element.getChildNodes().item(0) != null) {
-                        tagInfo.setHtml_tag(element.getChildNodes().item(0).getTextContent().trim());
+            NodeList nodeList = document.getElementsByTagName(XS_ELEMENT);
+            if(nodeList != null && nodeList.getLength() > 1) {
+                org.w3c.dom.Element firt_element = (org.w3c.dom.Element)nodeList.item(0);
+                if(firt_element.hasAttributes()) {
+                    XSDElement mainElement = parseXSD(file, firt_element.getAttribute(NAME_ATTRIBUTE));
+                    if(mainElement != null) {
+                        TagInfo tagInfo = new TagInfo();
+                        tagInfo.setTag_name(firt_element.getAttribute(NAME_ATTRIBUTE));
+                        tagInfos.add(tagInfo); // parent add here
+                        getParentChild(mainElement, 0, tagInfos);
                     }
+                } else {
+                    throw new Exception("Schema Not Valid");
                 }
-                tagInfos.add(tagInfo);
+            } else {
+                nodeList = document.getElementsByTagName(START);
+                for (int i=0; i<nodeList.getLength(); i++) {
+                    Node element = nodeList.item(i);
+                    TagInfo tagInfo = new TagInfo();
+                    if(i==0) {
+                        // first node so his parent is document so no need to add
+                        tagInfo.setTag_name(element.getNodeName());
+                    } else {
+                        tagInfo.setTag_name(element.getNodeName().trim());
+                        tagInfo.setParent_tag(element.getParentNode().getNodeName().trim());
+                        // content value of xml tag if any else left empty
+                        if(element.getChildNodes().item(0) != null) {
+                            tagInfo.setHtml_tag(element.getChildNodes().item(0).getTextContent().trim());
+                        }
+                    }
+                    tagInfos.add(tagInfo);
+                }
             }
+
         } finally {
             file.delete();
         }
@@ -194,8 +185,8 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
         try {
             org.w3c.dom.Document document = this.getBuilder().parse(file);
             document.getDocumentElement().normalize();
-            NodeList nodeList= document.getElementsByTagName(START);
-            for (int i=0; i<nodeList.getLength(); i++) {
+            NodeList nodeList = document.getElementsByTagName(START);
+            for(int i=0; i<nodeList.getLength(); i++) {
                 Node element = nodeList.item(i);
                 xmlNode.add(element.getNodeName());
             }

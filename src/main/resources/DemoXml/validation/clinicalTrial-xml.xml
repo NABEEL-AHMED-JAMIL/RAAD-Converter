@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalTrial>
+
+    <CTRINumber>CTRI-2019-06-019758</CTRINumber>
+    <LastModifiedOn>18-06-2019</LastModifiedOn>
+    <PostGraduateThesis>No</PostGraduateThesis>
+    <TypeofTrial>Interventional</TypeofTrial>
+    <TypeofStudy>Medical Device</TypeofStudy>
+
+    <SecondaryIDsIfAny>
+        <one>
+            <SecondaryID>Protocol Version 7</SecondaryID>
+            <Identifier>Protocol Number</Identifier>
+        </one>
+    </SecondaryIDsIfAny>
+
+    <DetailsofPersonalInvestigator>
+        <Name>Dr Mahesh Verma</Name>
+        <Designation>Director-Principle</Designation>
+        <Affiliation>Maulan Azad Institude of Dental Science, New Delhi</Affiliation>
+        <Phone>23324234</Phone>
+    </DetailsofPersonalInvestigator>
+
+</ClinicalTrial>

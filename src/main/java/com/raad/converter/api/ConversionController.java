@@ -25,7 +25,6 @@ import javax.annotation.PostConstruct;
 import java.io.*;
 
 
-
 @RestController
 @RequestMapping("/conversion")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -121,6 +120,28 @@ public class ConversionController {
         } catch (Exception ex) {
             logger.error("isValidXmlOrUrl -- Error occurred " + ex);
             return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+        }
+    }
+
+    @RequestMapping(path = "isValidSchema", method = RequestMethod.POST)
+    public ResponseEntity<?> isValidSchema(XmlRequest xmlRequest) {
+        File xmlFile = null;
+        File schemaFile = null;
+        try {
+            if(xmlRequest.getXmlFile() != null && xmlRequest.getSchemaFile() != null) {
+                xmlFile = this.outTagInfo.convertMultiPartToFile(xmlRequest.getSchemaFile());
+                schemaFile = this.outTagInfo.convertMultiPartToFile(xmlRequest.getXmlFile());
+                boolean response = this.outTagInfo.validateXml(this.outTagInfo.loadSchemaFromFile(xmlFile), this.outTagInfo.parseXmlDOMByFile(schemaFile));
+                return ResponseEntity.ok().body(new ResponseDTO("Xml Valid :- " + response, null));
+            } else {
+                return ResponseEntity.badRequest().body(new ResponseDTO("Request Detail Should No Be Null", null));
+            }
+        } catch (Exception ex) {
+            logger.error("isValidSchema -- Error occurred " + ex);
+            return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+        } finally {
+            if(xmlFile != null) { xmlFile.delete(); }
+            if(schemaFile != null) { schemaFile.delete(); }
         }
     }
 

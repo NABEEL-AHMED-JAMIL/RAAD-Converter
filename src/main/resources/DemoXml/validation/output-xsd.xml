@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with Liquid Technologies Online Tools 1.0 (https://www.liquid-technologies.com) -->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="project">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="modelVersion" type="xs:string" />
+                <xs:element name="parent">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="groupId" type="xs:string" />
+                            <xs:element name="artifactId" type="xs:string" />
+                            <xs:element name="version" type="xs:string" />
+                            <xs:element name="relativePath" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="licenses">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" name="license">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string" />
+                                        <xs:element name="url" type="xs:string" />
+                                        <xs:element name="distribution" type="xs:string" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="developers">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="developer">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="name" type="xs:string" />
+                                        <xs:element name="email" type="xs:string" />
+                                        <xs:element name="organization" type="xs:string" />
+                                        <xs:element name="organizationUrl" type="xs:string" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="groupId" type="xs:string" />
+                <xs:element name="artifactId" type="xs:string" />
+                <xs:element name="version" type="xs:string" />
+                <xs:element name="name" type="xs:string" />
+                <xs:element name="description" type="xs:string" />
+                <xs:element name="properties">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="java.version" type="xs:decimal" />
+                            <xs:element name="jodconverter.version" type="xs:string" />
+                            <xs:element name="swagger.version" type="xs:string" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="dependencies">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" name="dependency">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="groupId" type="xs:string" />
+                                        <xs:element name="artifactId" type="xs:string" />
+                                        <xs:element minOccurs="0" name="scope" type="xs:string" />
+                                        <xs:element minOccurs="0" name="exclusions">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="exclusion">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="groupId" type="xs:string" />
+                                                                <xs:element name="artifactId" type="xs:string" />
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element minOccurs="0" name="version" type="xs:decimal" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="build">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="plugins">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="plugin">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="groupId" type="xs:string" />
+                                                    <xs:element name="artifactId" type="xs:string" />
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

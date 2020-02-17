@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.1.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <licenses>
+        <license>
+            <name>New Barco License</name>
+            <url>https://github.com/NABEEL-AHMED-JAMIL</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>New Barco License</name>
+            <url>https://github.com/NABEEL-AHMED-JAMIL</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>New Barco License</name>
+            <url>https://github.com/NABEEL-AHMED-JAMIL</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>NABEEL AHMED JAMIL</name>
+            <email>nabeel.amd93@gmail.com</email>
+            <organization>Barco</organization>
+            <organizationUrl>https://github.com/NABEEL-AHMED-JAMIL</organizationUrl>
+        </developer>
+    </developers>
+
+    <groupId>com.raad.converter</groupId>
+    <artifactId>RAAD-Converter</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>RAAD-Converter</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <jodconverter.version>4.2.2</jodconverter.version>
+        <swagger.version>2.9.2</swagger.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
