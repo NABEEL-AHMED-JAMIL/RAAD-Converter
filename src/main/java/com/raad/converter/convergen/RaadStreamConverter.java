@@ -10,13 +10,13 @@ import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.util.HashMap;
 
 
-@Service
+@Component
 @Scope(value="prototype")
 public class RaadStreamConverter implements IRaadStreamConverter {
 

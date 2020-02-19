@@ -9,6 +9,10 @@ RUN export JAVA_HOME
 #Install office
 RUN amazon-linux-extras install libreoffice
 RUN yum install -y procps
+#Install Google Chrome
+ADD google.chrome.repo /etc/yum.repos.d/google.chrome.repo
+RUN yum install -y google-chrome-stable
+# add jar file into docker
 ADD target/RAAD-Converter-0.0.1-SNAPSHOT.jar app.jar
 ## copy local fount for remove utf-8 issue
 COPY Fonts /usr/share/fonts
