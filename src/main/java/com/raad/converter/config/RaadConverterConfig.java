@@ -1,18 +1,16 @@
 package com.raad.converter.config;
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Configuration
 public class RaadConverterConfig {
 
-    public Logger logger = LogManager.getLogger(RaadConverterConfig.class);
+    public Logger logger = LoggerFactory.getLogger(RaadConverterConfig.class);
 
     @Value("${socket.host}")
     private String host;

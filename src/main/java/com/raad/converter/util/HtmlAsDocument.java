@@ -3,14 +3,19 @@ package com.raad.converter.util;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlInlineFrame;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -22,7 +27,10 @@ import java.net.URL;
 @Scope("prototype")
 public class HtmlAsDocument {
 
-	public Logger logger = LogManager.getLogger(SocketServerComponent.class);
+	public Logger logger = LoggerFactory.getLogger(SocketServerComponent.class);
+
+	@Autowired
+	private WebDriver webDriver;
 
 	private final String SSL = "SSL";
 	private final String HTML = "<html></html>";
@@ -57,6 +65,27 @@ public class HtmlAsDocument {
 		} catch (Exception ex) {
 			logger.error("Exception :- " + ExceptionUtil.getRootCauseMessage(ex));
 		}
+	}
+
+	public Document getHtml(String url, String tag) {
+		Document document = Jsoup.parse("<html></html>");
+		try {
+			// Connection.Response used here to resolve the issue with legifrance url
+			Connection.Response execute = Jsoup.connect(url).header("User-Agent",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36")
+					.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+					.header("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3").header("Accept-Encoding", "none")
+					.header("Accept-Language", "en-US,en;q=0.9").header("Connection", "keep-alive").execute();
+			document = Jsoup.parse(execute.body(), url);
+			if (tag == null || tag.trim().isEmpty() || document.select(tag).isEmpty()) {
+				document = getJSRenderHtml(url, tag);
+			}
+			return document;
+		} catch (Exception ex) {
+			document = getJSRenderHtml(url, tag);
+			logger.error("Exception :- " + ExceptionUtil.getRootCauseMessage(ex));
+		}
+		return document;
 	}
 
 
@@ -106,6 +135,9 @@ public class HtmlAsDocument {
 					logger.error("Exception :- " + ExceptionUtil.getRootCauseMessage(ex));
 				}
 			}
+			if (tag != null && StringUtils.isNotEmpty(tag.trim()) && document.select(tag).isEmpty()) {
+				document = seleniumChromeDriver(url, tag);
+			}
 			page.cleanUp();
 			page.remove();
 			webClient.getCache().clear();
@@ -116,23 +148,24 @@ public class HtmlAsDocument {
 		return document;
 	}
 
-	public Document getHtml(String url, String tag) {
+	/**
+	 * Returns the HTML of provided URL as Document using Selenium with Chrome
+	 * drivers.
+	 *
+	 * @param url      - URL need to scrap.
+	 * @return Document - A HTML Document. (org.jsoup.nodes.Document)
+	 */
+	public Document seleniumChromeDriver(String url, String tag) {
 		Document document = Jsoup.parse("<html></html>");
 		try {
-			// Connection.Response used here to resolve the issue with legifrance url
-			Connection.Response execute = Jsoup.connect(url).header("User-Agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36")
-				.header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-				.header("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3").header("Accept-Encoding", "none")
-				.header("Accept-Language", "en-US,en;q=0.9").header("Connection", "keep-alive").execute();
-			document = Jsoup.parse(execute.body(), url);
-			if (tag == null || tag.trim().isEmpty() || document.select(tag).isEmpty()) {
-				document = getJSRenderHtml(url, tag);
-			}
-			return document;
+			logger.info("SELENIUM CHROME REQUEST RECIEVED FOR URL : [ " + url + " ]");
+			webDriver.get(url);
+			WebDriverWait wait = new WebDriverWait(webDriver, 30);
+			wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(tag)));
+			document = Jsoup.parse(webDriver.getPageSource(), url);
+			webDriver.manage().deleteAllCookies();
 		} catch (Exception ex) {
-			document = getJSRenderHtml(url, tag);
-			logger.error("Exception :- " + ExceptionUtil.getRootCauseMessage(ex));
+			logger.error("Exception occurred " + ex);
 		}
 		return document;
 	}
@@ -145,7 +178,15 @@ public class HtmlAsDocument {
 	public boolean isNotSocialSite(String src) {
 		src = src.toLowerCase();
 		String[] socialSites = { "twitter", "facebook", "linkedin", "gmail" };
-		for (String sc : socialSites) { if (src.contains(sc)) { return false; } }
+		for (String sc : socialSites) {
+			if(src.contains(sc)) { return false; }
+		}
 		return true;
+	}
+
+	public static void main(String args[]) {
+		HtmlAsDocument htmlAsDocument = new HtmlAsDocument();
+		htmlAsDocument.acceptAllCertificates();
+		htmlAsDocument.getJSRenderHtml("https://www.basg.gv.at/en/search?tx_solr%5Bq%5D=ppt&tx_solr%5Bfilter%5D%5B%5D=type2_stringS%3Afiles&tx_solr%5Bfilter%5D%5B%5D=", null);
 	}
 }

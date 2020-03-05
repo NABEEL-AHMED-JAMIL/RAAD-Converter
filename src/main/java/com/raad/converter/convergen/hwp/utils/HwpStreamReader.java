@@ -32,6 +32,7 @@ import org.apache.poi.util.LittleEndian;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class HwpStreamReader {
 
 	private Logger log = LoggerFactory.getLogger(getClass());

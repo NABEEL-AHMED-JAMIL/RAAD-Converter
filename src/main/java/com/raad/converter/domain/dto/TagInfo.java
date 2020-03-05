@@ -7,6 +7,7 @@ public class TagInfo {
     private String tag_name;
     private String parent_tag;
     private String html_tag;
+    private Boolean cdata;
 
     public TagInfo() { }
 
@@ -18,6 +19,9 @@ public class TagInfo {
 
     public String getHtml_tag() { return html_tag; }
     public void setHtml_tag(String html_tag) { this.html_tag = html_tag; }
+
+    public Boolean getCdata() { return cdata; }
+    public void setCdata(Boolean cdata) { this.cdata = cdata; }
 
     @Override
     public String toString() { return new Gson().toJson(this); }

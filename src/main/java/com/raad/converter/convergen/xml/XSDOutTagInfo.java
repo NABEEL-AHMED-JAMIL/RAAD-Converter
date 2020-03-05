@@ -11,8 +11,6 @@ import java.util.List;
 
 import com.raad.converter.domain.dto.TagInfo;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.xerces.dom.DOMInputImpl;
 import org.apache.xerces.impl.dv.xs.XSSimpleTypeDecl;
 import org.apache.xerces.impl.xs.XSAttributeDecl;
@@ -33,13 +31,14 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //http://www.herongyang.com/XSD/JAXP-XSD-Schema-XML-DOM-Validator.html
 //https://github.com/jaarrechea/XSDParser
 public class XSDOutTagInfo implements DOMErrorHandler, IXML {
 
-    public Logger logger = LogManager.getLogger(XSDOutTagInfo.class);
+    public Logger logger = LoggerFactory.getLogger(XSDOutTagInfo.class);
 
     private TransformerFactory transformerFactory;
     private DocumentBuilderFactory factory;

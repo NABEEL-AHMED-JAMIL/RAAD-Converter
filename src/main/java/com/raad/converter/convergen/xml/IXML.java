@@ -16,8 +16,10 @@ public interface IXML {
     final String BOOLEAN = "boolean";
     final String DATE = "date";
     final String TIME = "time";
+    final String PAGE_URL = "page_url";
     //============other detail =======
     final String BLANK = "";
+    final String COMMA = ",";
     final String START = "*";
     final String XS_ELEMENT = "xs:element";
     final String NAME_ATTRIBUTE = "name";

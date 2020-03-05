@@ -44,13 +44,13 @@ import javax.crypto.spec.SecretKeySpec;
 import com.raad.converter.convergen.hwp.utils.HwpStreamReader;
 import org.apache.poi.poifs.filesystem.*;
 import org.apache.poi.util.LittleEndian;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 public abstract class HwpTextExtractorV5 {
 
-	protected static Logger log = LoggerFactory.getLogger(HwpTextExtractorV5.class);
+	protected static Logger log = LogManager.getLogger(HwpTextExtractorV5.class);
 
 	private static final byte[] HWP_V5_SIGNATURE = "HWP Document File".getBytes();
 

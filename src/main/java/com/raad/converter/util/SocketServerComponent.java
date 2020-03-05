@@ -4,8 +4,8 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,7 +21,7 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 @Scope("prototype")
 public class SocketServerComponent {
 
-    public Logger logger = LogManager.getLogger(SocketServerComponent.class);
+    public Logger logger = LoggerFactory.getLogger(SocketServerComponent.class);
 
     private String END_POINT = "message";
     private String EVENT_NAME = "saveSocketClientInfo";
@@ -78,5 +78,4 @@ public class SocketServerComponent {
             logger.error("Exception :- " + ExceptionUtil.getRootCauseMessage(ex));
         }
     }
-
 }

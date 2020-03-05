@@ -1,23 +1,19 @@
 package com.raad.converter.util;
 
 import com.google.gson.Gson;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.*;
 
-/**
- * @author Nabeel.amd
- */
 @Component
 @Scope("prototype")
 public class LocalFileHandler {
 
-    public Logger logger = LogManager.getLogger(LocalFileHandler.class);
+    public Logger logger = LoggerFactory.getLogger(LocalFileHandler.class);
 
     @Value("${file.downloadLocation}")
     private String basePathTempDire;

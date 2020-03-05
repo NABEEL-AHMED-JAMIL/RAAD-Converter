@@ -7,13 +7,14 @@
 jodconverter:
     local:
         enabled: true
-        port-numbers: 2003
+        port-numbers: 2004
         kill-existing-process: true
         process-timeout: 180000
         process-retry-interval: 1000
         max-tasks-per-process: 20
         task-execution-timeout: 140000
         task-queue-timeout: 90000
+        working-dir: /tmp
         format-options:
             html:
                 store:

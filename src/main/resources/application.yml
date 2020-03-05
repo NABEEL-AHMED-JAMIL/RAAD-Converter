@@ -32,6 +32,6 @@ file:
     downloadLocation: \tmp
 ---
 server:
-    port: 9097
+    port: 9098
     servlet:
         context-path: /api/converter

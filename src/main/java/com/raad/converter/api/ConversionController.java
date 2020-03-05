@@ -10,10 +10,10 @@ import com.raad.converter.util.ExceptionUtil;
 import com.raad.converter.util.LocalFileHandler;
 import com.raad.converter.util.SocketServerComponent;
 import com.raad.converter.util.Util;
-import com.raad.converter.util.screen.ScreenShoot;
+import com.raad.converter.util.ScreenShoot;
 import io.swagger.annotations.Api;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -24,16 +24,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.util.UUID;
 
 
 @RestController
 @RequestMapping("/conversion")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*")
 @Api(tags = {"RAAD-Conversion := RAAD-Conversion EndPoint"})
 public class ConversionController {
 
-    public Logger logger = LogManager.getLogger(ConversionController.class);
+    public Logger logger = LoggerFactory.getLogger(ConversionController.class);
 
     private String PDF_STORE = "pdf";
 
@@ -147,15 +146,6 @@ public class ConversionController {
             if(xmlFile != null) { xmlFile.delete(); }
             if(schemaFile != null) { schemaFile.delete(); }
         }
-    }
-
-    @RequestMapping(path = "sanpShot/v1", method = RequestMethod.POST)
-    public ResponseEntity<?> sanpShot(@RequestParam("url") final String url) throws Exception {
-        ByteArrayOutputStream convertedFile = this.screenShoot.startSnapShot(url);
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + UUID.randomUUID()+".pdf");
-        headers.setContentType(MediaType.parseMediaType("application/pdf"));
-        return ResponseEntity.ok().headers(headers).body(convertedFile.toByteArray());
     }
 
 }
