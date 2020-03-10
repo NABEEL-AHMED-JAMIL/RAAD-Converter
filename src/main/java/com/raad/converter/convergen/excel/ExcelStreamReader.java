@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFPrintSetup;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Iterator;
+
+import static org.apache.poi.ss.usermodel.PrintSetup.*;
 
 
 @Component
@@ -35,6 +38,7 @@ public class ExcelStreamReader implements Excel {
                 XSSFPrintSetup printSetup = xssfSheet.getPrintSetup();
                 printSetup.setFitWidth((short) 1);
                 printSetup.setFitHeight((short) 0);
+                //printSetup.setPaperSize(A4_EXTRA_PAPERSIZE);
             }
             xssfWorkbook.write(bos);
             inputStream = new ByteArrayInputStream(bos.toByteArray());
@@ -50,6 +54,7 @@ public class ExcelStreamReader implements Excel {
                 HSSFPrintSetup hssfPrintSetup = hssfSheet.getPrintSetup();
                 hssfPrintSetup.setFitWidth((short) 1);
                 hssfPrintSetup.setFitHeight((short) 0);
+                //hssfPrintSetup.setPaperSize(A4_EXTRA_PAPERSIZE);
             }
             xlsWorkbook.write(bos);
             inputStream = new ByteArrayInputStream(bos.toByteArray());

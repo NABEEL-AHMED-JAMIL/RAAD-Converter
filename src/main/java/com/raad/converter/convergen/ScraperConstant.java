@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ScraperConstant {
 
+	public static final String UTF8 = "UTF-8";
+	public static final String BLANK = " ";
 	public static final String ZIP = "zip";
 
 	public static final String PDF = "pdf";

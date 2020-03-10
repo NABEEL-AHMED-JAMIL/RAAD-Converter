@@ -1,17 +1,24 @@
 package com.raad.converter.convergen;
 
+
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.raad.converter.convergen.excel.ExcelStreamReader;
 import com.raad.converter.convergen.hwp.HwpTextExtractor;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
+import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.HashMap;
 
@@ -28,6 +35,9 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     private String SelectPdfVersion = "SelectPdfVersion";
     private String ExportBookmarks = "ExportBookmarks";
     private String ExportNotes = "ExportNotes";
+    private DocumentConverter converter;
+    private String html = "<!DOCTYPE html>\n" + "<html>\n" + "\t<head>\n" + "\t</head>\n" +
+            "<body>\n" + "<p>%s</p>\n" + "</body>\n" + "</html>\n";
 
     @Autowired
     private OfficeManager officeManager;
@@ -36,12 +46,22 @@ public class RaadStreamConverter implements IRaadStreamConverter {
 
     public RaadStreamConverter() { }
 
+
+    @PostConstruct
+    public void init() {
+        System.out.println("Office Manager Init");
+        this.converter = LocalConverter.builder().storeProperties(getStoreProperties())
+           .officeManager(officeManager).build();
+        System.out.println("Office Manager End");
+    }
+
     /**
      * @param inputStream => stream
      * @param sourceFileName => xyz.xls
      * @param targetFileName => xyz.pdf
      * */
     public ByteArrayOutputStream doConvert(InputStream inputStream, String sourceFileName, String targetFileName) throws Exception {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         if(inputStream == null || (sourceFileName == null || sourceFileName.equals("")) || (targetFileName == null || targetFileName.equals(""))) {
             throw new NullPointerException("File Process File Due To Null Value");
         } else {
@@ -52,13 +72,19 @@ public class RaadStreamConverter implements IRaadStreamConverter {
             } else if(sourceFileName.contains(ScraperConstant.HWP_EXTENSION)) {
                 sourceFileName = sourceFileName.replace(ScraperConstant.HWP_EXTENSION, ScraperConstant.TXT_EXTENSION);
                 inputStream = HwpTextExtractor.extract(inputStream);
+                String text = convertInputStreamToString(inputStream);
+                inputStream = new ByteArrayInputStream(text.getBytes());
+                // copy of input-stream
+                try{
+                    return convert(inputStream, sourceFileName, targetFileName, outputStream);
+                } catch (Exception ex) {
+                    System.out.println("Hwp File Try Itext");
+                    String tempHtml = String.format(html, text);
+                    inputStream = new ByteArrayInputStream(tempHtml.getBytes());
+                    return hwpTextToPdf(inputStream,  outputStream);
+                }
             }
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            final DocumentConverter converter = LocalConverter.builder().officeManager(officeManager).storeProperties(getStoreProperties()).build();
-            final DocumentFormat sourceFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(sourceFileName));
-            final DocumentFormat targetFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(targetFileName));
-            converter.convert(inputStream).as(sourceFormat).to(outputStream).as(targetFormat).execute();
-            return outputStream;
+            return convert(inputStream, sourceFileName, targetFileName, outputStream);
         }
     }
 
@@ -70,10 +96,36 @@ public class RaadStreamConverter implements IRaadStreamConverter {
 
     private HashMap<String, Object> getFilterData() {
         HashMap<String, Object> filterDate = new HashMap<>();
-        filterDate.put(IsSkipEmptyPages, new Boolean(true));
-        filterDate.put(SelectPdfVersion, new Integer(1));
+//        filterDate.put(IsSkipEmptyPages, new Boolean(true));
+//        filterDate.put(SelectPdfVersion, new Integer(1));
         filterDate.put(ExportBookmarks, false);
         filterDate.put(ExportNotes, false);
         return filterDate;
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while((length = inputStream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        return result.toString();
+    }
+
+    private ByteArrayOutputStream convert(InputStream inputStream, String sourceFileName, String targetFileName,
+        ByteArrayOutputStream byteArrayOutputStream) throws OfficeException {
+        final DocumentFormat sourceFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(sourceFileName));
+        final DocumentFormat targetFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(targetFileName));
+        this.converter.convert(inputStream).as(sourceFormat).to(byteArrayOutputStream).as(targetFormat).execute();
+        return byteArrayOutputStream;
+    }
+
+    public ByteArrayOutputStream hwpTextToPdf(InputStream inputStream, ByteArrayOutputStream byteArrayOutputStream) throws IOException {
+        ConverterProperties properties = new ConverterProperties();
+        properties.setCharset(ScraperConstant.UTF8);
+        properties.setFontProvider(new DefaultFontProvider(false, false, true));
+        HtmlConverter.convertToPdf(inputStream, byteArrayOutputStream, properties);
+        return byteArrayOutputStream;
     }
 }
