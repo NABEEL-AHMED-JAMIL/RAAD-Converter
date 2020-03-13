@@ -103,7 +103,7 @@ public class RaadStreamConverter implements IRaadStreamConverter {
         return filterDate;
     }
 
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+    public static String convertInputStreamToString(InputStream inputStream) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int length;

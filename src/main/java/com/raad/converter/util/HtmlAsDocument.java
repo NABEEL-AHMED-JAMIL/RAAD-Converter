@@ -49,15 +49,13 @@ public class HtmlAsDocument {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 				return null;
 			}
-
 				@Override
 				public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-
 				@Override
 				public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
 			}
 		};
-		// Activate the new trust manager
+
 		try {
 			SSLContext sc = SSLContext.getInstance(SSL);
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -115,11 +113,6 @@ public class HtmlAsDocument {
 				try {
 					if (!page.getElementsByTagName(IFRAME).isEmpty()) {
 						HtmlInlineFrame iframe = (HtmlInlineFrame) page.getElementsByTagName(IFRAME).get(0);
-						/**
-						 * Conditions : - Iframe contains an HTML page. - The source of Iframe must be
-						 * absolute, it couldn't be a new URL i.e starts with http indicate new url. -
-						 * The source value must not be null.
-						 */
 						if (!iframe.getSrcAttribute().isEmpty()) {
 							if (iframe.getEnclosedPage().isHtmlPage() && !iframe.getSrcAttribute().startsWith(HTTP)
 									&& isNotSocialSite(iframe.getSrcAttribute())) {
@@ -148,13 +141,6 @@ public class HtmlAsDocument {
 		return document;
 	}
 
-	/**
-	 * Returns the HTML of provided URL as Document using Selenium with Chrome
-	 * drivers.
-	 *
-	 * @param url      - URL need to scrap.
-	 * @return Document - A HTML Document. (org.jsoup.nodes.Document)
-	 */
 	public Document seleniumChromeDriver(String url, String tag) {
 		Document document = Jsoup.parse("<html></html>");
 		try {
@@ -170,11 +156,6 @@ public class HtmlAsDocument {
 		return document;
 	}
 
-	/**
-	 * Check the source URL is not a social site. (i.e. twitter, facebook, linkedin, gmail)
-	 * @param src - URL String
-	 * @return boolean - true if site is not social media site, otherwise send false.
-	 */
 	public boolean isNotSocialSite(String src) {
 		src = src.toLowerCase();
 		String[] socialSites = { "twitter", "facebook", "linkedin", "gmail" };
@@ -184,9 +165,4 @@ public class HtmlAsDocument {
 		return true;
 	}
 
-	public static void main(String args[]) {
-		HtmlAsDocument htmlAsDocument = new HtmlAsDocument();
-		htmlAsDocument.acceptAllCertificates();
-		htmlAsDocument.getJSRenderHtml("https://www.basg.gv.at/en/search?tx_solr%5Bq%5D=ppt&tx_solr%5Bfilter%5D%5B%5D=type2_stringS%3Afiles&tx_solr%5Bfilter%5D%5B%5D=", null);
-	}
 }

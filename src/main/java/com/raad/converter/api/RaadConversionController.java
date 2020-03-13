@@ -30,9 +30,9 @@ import java.io.*;
 @RequestMapping("/conversion")
 @CrossOrigin(origins = "*")
 @Api(tags = {"RAAD-Conversion := RAAD-Conversion EndPoint"})
-public class ConversionController {
+public class RaadConversionController {
 
-    public Logger logger = LoggerFactory.getLogger(ConversionController.class);
+    public Logger logger = LoggerFactory.getLogger(RaadConversionController.class);
 
     private String PDF_STORE = "pdf";
 

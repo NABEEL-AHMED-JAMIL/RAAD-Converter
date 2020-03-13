@@ -1,6 +1,6 @@
 package com.raad.converter.util;
 
-import com.raad.converter.api.ConversionController;
+import com.raad.converter.api.RaadConversionController;
 import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.automate.EnvironmentManager;
 import com.raad.converter.automate.Procedure;
@@ -14,18 +14,16 @@ import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+
 import javax.imageio.ImageIO;
 import java.io.*;
-import java.util.UUID;
 
 
 @Component
 @Scope(value="prototype")
 public class ScreenShoot implements Procedure {
 
-    public Logger logger = LoggerFactory.getLogger(ConversionController.class);
+    public Logger logger = LoggerFactory.getLogger(RaadConversionController.class);
 
     public final String JPG = "JPG";
     public final String PNG = "PNG";
@@ -139,14 +137,4 @@ public class ScreenShoot implements Procedure {
         EnvironmentManager.shutDownDriver();
     }
 
-//    public static void main(String args[]) throws Exception {
-//        ScreenShoot screenShoot = new ScreenShoot();
-//        screenShoot.htmlConvert("https://s3.amazonaws.com/www.webacq-sample.com/05.hwp", null);
-//
-////        screenShoot.startBrowser();
-////        screenShoot.startSnapShot("http://www.globenewswire.com/news-release/2020/02/18/1986454/0/en/Talenom-Plc-Disclosure-under-chapter-9-section-10-of-the-securities-market-act.html",
-////             "C:\\Users\\Nabeel.Ahmed\\Downloads\\RAAD-Converter\\src\\main\\resources\\image\\"+ UUID.randomUUID() +".png");
-////        screenShoot.stopBrowser();
-//
-//    }
 }

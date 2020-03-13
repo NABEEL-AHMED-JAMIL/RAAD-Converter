@@ -30,14 +30,14 @@ public class SocketServerComponent {
     @Autowired
     private SocketIOServer socketIOServer;
 
-    //@PostConstruct
+    @PostConstruct
     public void init(){
-        logger.info("===========>>>>>>>>>>>>>>>>>SocketServerComponent-Start<<<<<<<<<<<<<<==================");
+        logger.info("===========>>>>>>>>>>>>SocketServerComponent-Start<<<<<<<<<<==================");
         this.socketIOServer.addConnectListener(onConnected());
         this.socketIOServer.addDisconnectListener(onDisconnected());
         this.socketIOServer.addEventListener(this.EVENT_NAME, String.class, saveSocketClientInfo());
         this.socketIOServer.start();
-        logger.info("===========>>>>>>>>>>>>>>>>SocketServerComponent-End<<<<<<<<<<<<<<<<<<==================");
+        logger.info("===========>>>>>>>>>>>>>>SocketServerComponent-End<<<<<<<<<==================");
     }
 
     public SocketServerComponent() { }

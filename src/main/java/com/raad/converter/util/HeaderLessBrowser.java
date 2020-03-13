@@ -24,9 +24,9 @@ import java.io.IOException;
 
 @Component
 @Scope(value="prototype")
-public class HeaderLessBroswer {
+public class HeaderLessBrowser {
 
-    public Logger logger = LoggerFactory.getLogger(HeaderLessBroswer.class);
+    public Logger logger = LoggerFactory.getLogger(HeaderLessBrowser.class);
 
     public final String JPG = "JPG";
     public final String PNG = "PNG";

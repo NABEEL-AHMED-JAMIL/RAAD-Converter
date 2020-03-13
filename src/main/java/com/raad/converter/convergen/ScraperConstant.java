@@ -57,6 +57,7 @@ public interface ScraperConstant {
 
 	public static final String ALL = "all";
 	public static final String HTML = "html";
+	public static final String HtML_EXTENSION = ".html";
 
 	public static  final String CONTENT_TYPE = "Content-Type";
 

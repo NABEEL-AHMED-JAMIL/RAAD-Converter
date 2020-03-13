@@ -25,6 +25,7 @@ public class AsyncWorker implements Runnable {
     private int fileNumber;
 
     private String PDF_STORE = "pdf";
+    private String TEXT_STORE = "txt";
     @Autowired
     public RaadStreamConverter raadStreamConverter;
     @Autowired

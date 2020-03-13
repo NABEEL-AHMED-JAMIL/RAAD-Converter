@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>org.openpnp</groupId>
 			<artifactId>opencv</artifactId>
-			<version>3.2.0-1</version>
+			<version>3.4.2-0</version>
 		</dependency>
 
 		<dependency>
@@ -140,6 +140,12 @@
 			<groupId>org.jodconverter</groupId>
 			<artifactId>jodconverter-local</artifactId>
 			<version>${jodconverter.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.libreoffice</groupId>
+			<artifactId>ridl</artifactId>
+			<version>6.2.2</version>
 		</dependency>
 
 		<dependency>
