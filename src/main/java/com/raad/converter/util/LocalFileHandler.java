@@ -67,16 +67,11 @@ public class LocalFileHandler {
         }
     }
 
-    /**
-     * Delete all the files in given path but keep the directory.
-     *
-     * @param basePath - The path of file or folder.
-     */
     public void cleanDir(String basePath) {
         try {
             File file = new File(basePath);
             if (file.exists()) {
-                logger.info("Cleanaing Directory At Path [ " + basePath + " ]");
+                logger.info("Cleaning Directory At Path [ " + basePath + " ]");
                 FileUtils.cleanDirectory(file);
             }
         } catch (Exception ex) {
@@ -84,8 +79,13 @@ public class LocalFileHandler {
         }
     }
 
-    public String getBasePathTempDire() { return basePathTempDire; }
-    public void setBasePathTempDire(String basePathTempDire) { this.basePathTempDire = basePathTempDire; }
+    public String getBasePathTempDire() {
+        return basePathTempDire;
+    }
+
+    public void setBasePathTempDire(String basePathTempDire) {
+        this.basePathTempDire = basePathTempDire;
+    }
 
     @Override
     public String toString() { return new Gson().toJson(this); }

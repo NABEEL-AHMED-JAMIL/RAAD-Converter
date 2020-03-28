@@ -1,6 +1,5 @@
 package com.raad.converter.util;
 
-
 import com.raad.converter.automate.RunEnvironment;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.JavascriptExecutor;
@@ -21,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
 
 @Component
 @Scope(value="prototype")

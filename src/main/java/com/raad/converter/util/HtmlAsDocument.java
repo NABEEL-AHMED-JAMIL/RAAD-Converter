@@ -23,40 +23,35 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.net.URL;
 
+
 @Component
 @Scope("prototype")
 public class HtmlAsDocument {
 
-	public Logger logger = LoggerFactory.getLogger(SocketServerComponent.class);
+	public Logger logger = LoggerFactory.getLogger(HtmlAsDocument.class);
 
 	@Autowired
 	private WebDriver webDriver;
-
 	private final String SSL = "SSL";
 	private final String HTML = "<html></html>";
 	public final String HTTP = "http";
 	public final String IFRAME = "iframe";
+	public final String[] socialSites = { "twitter", "facebook", "linkedin", "gmail" };
 
-	/**
-	 * Trust all web certificates from any web source.
-	 */
 	@PostConstruct
 	private void acceptAllCertificates() {
 		// Create a new trust manager that trust all certificates
-		TrustManager[] trustAllCerts = new TrustManager[] {
-			new X509TrustManager() {
-				@Override
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
-			}
-				@Override
-				public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-				@Override
-				public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-			}
-		};
-
 		try {
+			TrustManager[] trustAllCerts = new TrustManager[] {
+				new X509TrustManager() {
+					@Override
+					public java.security.cert.X509Certificate[] getAcceptedIssuers() { return null; }
+					@Override
+					public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+					@Override
+					public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+				}
+			};
 			SSLContext sc = SSLContext.getInstance(SSL);
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
@@ -97,7 +92,6 @@ public class HtmlAsDocument {
 			webClient.getOptions().setCssEnabled(false);
 			webClient.getOptions().setJavaScriptEnabled(true);
 			webClient.getOptions().setTimeout(100 * 1000);
-			// new change added by nabeel
 			webClient.getOptions().setAppletEnabled(false);
 			webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 			webClient.setCssErrorHandler(new SilentCssErrorHandler());
@@ -157,10 +151,10 @@ public class HtmlAsDocument {
 	}
 
 	public boolean isNotSocialSite(String src) {
-		src = src.toLowerCase();
-		String[] socialSites = { "twitter", "facebook", "linkedin", "gmail" };
 		for (String sc : socialSites) {
-			if(src.contains(sc)) { return false; }
+			if(src.toLowerCase().contains(sc)) {
+				return false;
+			}
 		}
 		return true;
 	}

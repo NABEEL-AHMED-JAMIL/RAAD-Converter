@@ -5,5 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RaadConverterRepository extends JpaRepository<RaadConverter, Long> {
-}
+public interface RaadConverterRepository extends JpaRepository<RaadConverter, Long> { }

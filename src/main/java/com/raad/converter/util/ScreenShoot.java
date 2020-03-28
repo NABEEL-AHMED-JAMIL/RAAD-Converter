@@ -1,6 +1,6 @@
 package com.raad.converter.util;
 
-import com.raad.converter.api.RaadConversionController;
+import com.raad.converter.api.RaadConversionApi;
 import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.automate.EnvironmentManager;
 import com.raad.converter.automate.Procedure;
@@ -23,7 +23,7 @@ import java.io.*;
 @Scope(value="prototype")
 public class ScreenShoot implements Procedure {
 
-    public Logger logger = LoggerFactory.getLogger(RaadConversionController.class);
+    public Logger logger = LoggerFactory.getLogger(RaadConversionApi.class);
 
     public final String JPG = "JPG";
     public final String PNG = "PNG";
@@ -93,6 +93,7 @@ public class ScreenShoot implements Procedure {
     private void takeSnapShotFullScreen(ByteArrayOutputStream byteArrayOutputStream) throws Exception {
         ImageIO.write(new AShot().shootingStrategy(ShootingStrategies.viewportPasting(1000)).takeScreenshot(this.driver).getImage(), JPG, byteArrayOutputStream);
         byteArrayOutputStream = this.raadStreamConverter.doConvert(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), TEMP_SOURCE_FILE, TEMP_TARGET_FILE);
+        return;
     }
 
     private ByteArrayOutputStream takeSnapShotFullScreen() throws Exception {

@@ -1,13 +1,11 @@
 package com.raad.converter.convergen;
 
-
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.raad.converter.convergen.excel.ExcelStreamReader;
 import com.raad.converter.convergen.hwp.HwpTextExtractor;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.jodconverter.DocumentConverter;
 import org.jodconverter.LocalConverter;
 import org.jodconverter.document.DefaultDocumentFormatRegistry;
@@ -71,15 +69,15 @@ public class RaadStreamConverter implements IRaadStreamConverter {
              // hwp file handling
             } else if(sourceFileName.contains(ScraperConstant.HWP_EXTENSION)) {
                 sourceFileName = sourceFileName.replace(ScraperConstant.HWP_EXTENSION, ScraperConstant.TXT_EXTENSION);
-                inputStream = HwpTextExtractor.extract(inputStream);
-                String text = convertInputStreamToString(inputStream);
+                String text = convertInputStreamToString(HwpTextExtractor.extract(inputStream));
                 inputStream = new ByteArrayInputStream(text.getBytes());
                 // copy of input-stream
                 try{
                     return convert(inputStream, sourceFileName, targetFileName, outputStream);
                 } catch (Exception ex) {
-                    System.out.println("Hwp File Try Itext");
-                    String tempHtml = String.format(html, text);
+                    System.out.println("===========>>Hwp File Try Itext<<===========");
+                    String tempHtml = String.format(html, text.replaceAll("\\s+", " "));
+                    //System.out.println(tempHtml);
                     inputStream = new ByteArrayInputStream(tempHtml.getBytes());
                     return hwpTextToPdf(inputStream,  outputStream);
                 }
