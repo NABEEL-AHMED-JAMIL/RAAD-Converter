@@ -1,4 +1,4 @@
-package com.raad.converter.domain.dto;
+package com.raad.converter.domain;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

@@ -1,4 +1,4 @@
-package com.raad.converter.domain.dto;
+package com.raad.converter.domain;
 
 import org.springframework.web.multipart.MultipartFile;
 

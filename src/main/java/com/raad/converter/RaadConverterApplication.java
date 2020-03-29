@@ -1,8 +1,10 @@
 package com.raad.converter;
 
 import net.sourceforge.tess4j.TesseractException;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import java.io.File;
@@ -11,7 +13,7 @@ import java.io.IOException;
 
 @EnableScheduling
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.raad.converter" })
+@ComponentScan(basePackages = { "com.raad.converter.*" })
 public class RaadConverterApplication {
 
 	public static void main(String[] args) throws Exception {
@@ -29,6 +31,13 @@ public class RaadConverterApplication {
 						fileEntry.getName(),fileEntry.getName()));
 			}
 		}
+	}
+
+	@Bean
+	public CommandLineRunner commandLineRunner() {
+		return (args) -> {
+			System.out.println("Done---");
+		};
 	}
 
 }

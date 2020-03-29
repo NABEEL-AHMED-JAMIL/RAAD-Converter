@@ -21,7 +21,7 @@ spring:
             maxRequestSize: -1
             enabled: true
     profiles:
-        active: ${RAAD_API_ENV}
+        active: loc
 ---
 logging:
     level:

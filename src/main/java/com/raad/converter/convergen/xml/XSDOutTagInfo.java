@@ -9,7 +9,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.raad.converter.domain.dto.TagInfo;
+import com.raad.converter.domain.TagInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xerces.dom.DOMInputImpl;
 import org.apache.xerces.impl.dv.xs.XSSimpleTypeDecl;

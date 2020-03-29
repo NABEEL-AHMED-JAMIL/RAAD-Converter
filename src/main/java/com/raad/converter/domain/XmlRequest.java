@@ -1,4 +1,4 @@
-package com.raad.converter.domain.dto;
+package com.raad.converter.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;

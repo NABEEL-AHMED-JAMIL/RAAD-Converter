@@ -1,9 +1,9 @@
 package com.raad.converter.api;
 
 import com.raad.converter.convergen.xml.XmlOutTagInfo;
-import com.raad.converter.domain.dto.ResponseDTO;
-import com.raad.converter.domain.dto.XmlMakerRequest;
-import com.raad.converter.domain.dto.XmlRequest;
+import com.raad.converter.domain.ResponseDTO;
+import com.raad.converter.domain.XmlMakerRequest;
+import com.raad.converter.domain.XmlRequest;
 import com.raad.converter.util.ExceptionUtil;
 import com.raad.converter.util.Util;
 import io.swagger.annotations.Api;

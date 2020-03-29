@@ -2,8 +2,8 @@ package com.raad.converter.api;
 
 import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.convergen.ScraperConstant;
-import com.raad.converter.domain.dto.FilePath;
-import com.raad.converter.domain.dto.FileWithObject;
+import com.raad.converter.domain.FilePath;
+import com.raad.converter.domain.FileWithObject;
 import com.raad.converter.util.ExceptionUtil;
 import com.raad.converter.util.LocalFileHandler;
 import com.raad.converter.util.SocketServerComponent;

@@ -2,8 +2,8 @@ package com.raad.converter.api;
 
 
 import com.raad.converter.decoder.ReadTextFromImageProcessor;
-import com.raad.converter.domain.dto.ImageProcessReqeust;
-import com.raad.converter.domain.dto.ResponseDTO;
+import com.raad.converter.domain.ImageProcessReqeust;
+import com.raad.converter.domain.ResponseDTO;
 import com.raad.converter.util.ExceptionUtil;
 import io.swagger.annotations.Api;
 import net.sourceforge.tess4j.ITesseract;
