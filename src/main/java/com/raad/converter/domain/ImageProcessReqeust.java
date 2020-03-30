@@ -1,5 +1,6 @@
 package com.raad.converter.domain;
 
+import com.google.gson.Gson;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImageProcessReqeust {
@@ -27,5 +28,7 @@ public class ImageProcessReqeust {
     public Integer getBackground() { return background; }
     public void setBackground(Integer background) { this.background = background; }
 
+    @Override
+    public String toString() { return new Gson().toJson(this); }
 
 }

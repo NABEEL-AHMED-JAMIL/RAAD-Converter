@@ -10,6 +10,23 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
+	<licenses>
+		<license>
+			<name>New Barco License</name>
+			<url>https://github.com/NABEEL-AHMED-JAMIL</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>NABEEL AHMED JAMIL</name>
+			<email>nabeel.amd93@gmail.com</email>
+			<organization>Barco</organization>
+			<organizationUrl>https://github.com/NABEEL-AHMED-JAMIL</organizationUrl>
+		</developer>
+	</developers>
+
 	<groupId>com.raad.converter</groupId>
 	<artifactId>RAAD-Converter</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -29,6 +46,17 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>

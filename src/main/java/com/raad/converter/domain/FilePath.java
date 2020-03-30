@@ -1,5 +1,7 @@
 package com.raad.converter.domain;
 
+import com.google.gson.Gson;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -11,16 +13,10 @@ public class FilePath {
 
     public FilePath() { }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
+    public String getPath() { return path; }
+    public void setPath(String path) { this.path = path; }
 
     @Override
-    public String toString() {
-        return "FilePath{" + "path='" + path + '\'' + '}';
-    }
+    public String toString() { return new Gson().toJson(this); }
+
 }

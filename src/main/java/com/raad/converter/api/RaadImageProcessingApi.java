@@ -1,7 +1,7 @@
 package com.raad.converter.api;
 
 
-import com.raad.converter.decoder.ReadTextFromImageProcessor;
+import com.raad.converter.util.ReadTextFromImageProcessor;
 import com.raad.converter.domain.ImageProcessReqeust;
 import com.raad.converter.domain.ResponseDTO;
 import com.raad.converter.util.ExceptionUtil;
