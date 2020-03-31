@@ -1,5 +1,6 @@
 package com.raad.converter.convergen.xml;
 
+import com.github.kklisura.cdt.launch.ChromeArguments;
 import com.github.kklisura.cdt.launch.ChromeLauncher;
 import com.github.kklisura.cdt.protocol.commands.Page;
 import com.github.kklisura.cdt.services.ChromeDevToolsService;
@@ -134,10 +135,23 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
                 if(xmlMakerRequest.getPdf()) {
                     // pdf image
                     //htmlConvert(xmlMakerRequest.getUrl(), String.format(pdfFilePath, UUID.randomUUID()));
+
+                    // set no-sandbox true to bypass OS security in docker image
+                    Map<String, Object> additionalChromeArguments = new HashMap<>();
+                    additionalChromeArguments.put("no-sandbox", true);
+
+                    // create chrome argument with additional properties and headless true
+                    ChromeArguments chromeArguments = ChromeArguments.builder().noFirstRun().noDefaultBrowserCheck()
+                            .disableBackgroundNetworking().disableBackgroundTimerThrottling()
+                            .disableClientSidePhishingDetection().disableDefaultApps().disableExtensions().disableHangMonitor()
+                            .disablePopupBlocking().disablePromptOnRepost().disableSync().disableTranslate()
+                            .metricsRecordingOnly().safebrowsingDisableAutoUpdate().headless(true).disableGpu(true)
+                            .hideScrollbars(true).muteAudio(true).additionalArguments(additionalChromeArguments).build();
+
                     // Create chrome launcher.
                     final ChromeLauncher launcher = new ChromeLauncher();
                     // Launch chrome either as headless (true) or regular (false).
-                    final ChromeService chromeService = launcher.launch(true);
+                    final ChromeService chromeService = launcher.launch(chromeArguments);
                     // Create empty tab ie about:blank.
                     final ChromeTab tab = chromeService.createTab();
                     // Get DevTools service to this tab
