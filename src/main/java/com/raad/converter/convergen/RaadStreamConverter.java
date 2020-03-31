@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.util.HashMap;
+import java.util.concurrent.*;
 
 
 @Component
@@ -70,16 +71,14 @@ public class RaadStreamConverter implements IRaadStreamConverter {
             } else if(sourceFileName.contains(ScraperConstant.HWP_EXTENSION)) {
                 sourceFileName = sourceFileName.replace(ScraperConstant.HWP_EXTENSION, ScraperConstant.TXT_EXTENSION);
                 String text = convertInputStreamToString(HwpTextExtractor.extract(inputStream));
-                inputStream = new ByteArrayInputStream(text.getBytes());
-                // copy of input-stream
                 try{
+                    inputStream = new ByteArrayInputStream(text.getBytes());
                     return convert(inputStream, sourceFileName, targetFileName, outputStream);
                 } catch (Exception ex) {
                     System.out.println("===========>>Hwp File Try Itext<<===========");
                     String tempHtml = String.format(html, text.replaceAll("\\s+", " "));
-                    //System.out.println(tempHtml);
                     inputStream = new ByteArrayInputStream(tempHtml.getBytes());
-                    return hwpTextToPdf(inputStream,  outputStream);
+                    return hwpTextToPdfV2(inputStream,  outputStream);
                 }
             }
             return convert(inputStream, sourceFileName, targetFileName, outputStream);
@@ -112,10 +111,11 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     }
 
     private ByteArrayOutputStream convert(InputStream inputStream, String sourceFileName, String targetFileName,
-        ByteArrayOutputStream byteArrayOutputStream) throws OfficeException {
+        ByteArrayOutputStream byteArrayOutputStream) throws OfficeException, IOException {
         final DocumentFormat sourceFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(sourceFileName));
         final DocumentFormat targetFormat = DefaultDocumentFormatRegistry.getFormatByExtension(FilenameUtils.getExtension(targetFileName));
         this.converter.convert(inputStream).as(sourceFormat).to(byteArrayOutputStream).as(targetFormat).execute();
+        if(inputStream != null) { inputStream.close(); }
         return byteArrayOutputStream;
     }
 
@@ -124,6 +124,30 @@ public class RaadStreamConverter implements IRaadStreamConverter {
         properties.setCharset(ScraperConstant.UTF8);
         properties.setFontProvider(new DefaultFontProvider(false, false, true));
         HtmlConverter.convertToPdf(inputStream, byteArrayOutputStream, properties);
+        if(inputStream != null) { inputStream.close(); }
         return byteArrayOutputStream;
+        // ==>
     }
+
+    public ByteArrayOutputStream hwpTextToPdfV2(InputStream inputStream, ByteArrayOutputStream byteArrayOutputStream) throws Exception {
+        try {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Callable<ByteArrayOutputStream> callable = () -> {
+                ConverterProperties properties = new ConverterProperties();
+                properties.setCharset(ScraperConstant.UTF8);
+                properties.setFontProvider(new DefaultFontProvider(false, false, true));
+                HtmlConverter.convertToPdf(inputStream, byteArrayOutputStream, properties);
+                if(inputStream != null) { inputStream.close(); }
+                return byteArrayOutputStream;
+            };
+            System.out.println("Submitting Callable");
+            Future<ByteArrayOutputStream> future = executor.submit(callable);
+            System.out.println("Do something else while callable is getting executed");
+            return future.get(10, TimeUnit.MINUTES);
+        } catch (Exception ex) {
+            throw new Exception("File Not Convert In given time");
+        }
+
+    }
+
 }
