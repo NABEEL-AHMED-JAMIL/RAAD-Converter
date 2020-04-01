@@ -16,7 +16,7 @@ RUN yum install -y google-chrome-stable
 ADD target/RAAD-Converter-0.0.1-SNAPSHOT.jar app.jar
 ## copy local fount for remove utf-8 issue
 COPY Fonts /usr/share/fonts
-EXPOSE 9097
+EXPOSE 9097 889
 ENTRYPOINT ["java", "-Dfile.encoding=UTF-8", "-jar", "app.jar"]
 #=======================File-2==================================
 # Office Install

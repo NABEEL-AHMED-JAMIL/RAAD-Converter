@@ -1,9 +1,7 @@
 package com.raad.converter;
 
-import com.raad.converter.model.beans.Location;
-import com.raad.converter.model.beans.StockPrice;
-import com.raad.converter.model.repository.StockPriceRepository;
-import net.sourceforge.tess4j.TesseractException;
+import com.raad.converter.model.beans.SocketClientInfo;
+import com.raad.converter.model.repository.SocketClientInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -12,8 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import java.io.File;
-import java.io.IOException;
-import java.util.Date;
+import java.util.UUID;
 
 
 @EnableScheduling
@@ -26,7 +23,7 @@ public class RaadConverterApplication {
 		//listFilesForFolder(new File("C:\\Users\\Nabeel.Ahmed\\Downloads\\File"));
 	}
 
-	public void listFilesForFolder(final File folder) throws IOException, TesseractException {
+	public void listFilesForFolder(final File folder) {
 		for (final File fileEntry : folder.listFiles()) {
 			if (fileEntry.isDirectory()) {
 				listFilesForFolder(fileEntry);
@@ -38,9 +35,18 @@ public class RaadConverterApplication {
 		}
 	}
 
+	@Autowired
+	SocketClientInfoRepository socketClientInfoRepository;
+
 	@Bean
 	public CommandLineRunner commandLineRunner() {
-		return (args) -> {};
+		return (args) -> {
+//			for(int i=0; i<5; i++){
+//				SocketClientInfo socketClientInfo = new SocketClientInfo();
+//				socketClientInfo.setToken(UUID.randomUUID().toString());
+//				socketClientInfoRepository.save(socketClientInfo);
+//			}
+		};
 	}
 
 }
