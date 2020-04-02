@@ -20,7 +20,6 @@ public class JsonStringSqlTypeDescriptor extends AbstractJsonSqlTypeDescriptor {
             protected void doBind(PreparedStatement st, X value, int index, WrapperOptions options) throws SQLException {
                 st.setString(index, javaTypeDescriptor.unwrap(value, String.class, options));
             }
-
             @Override
             protected void doBind(CallableStatement st, X value, String name, WrapperOptions options)
                     throws SQLException {

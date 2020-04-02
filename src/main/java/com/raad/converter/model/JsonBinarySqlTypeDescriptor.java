@@ -22,7 +22,6 @@ public class JsonBinarySqlTypeDescriptor extends AbstractJsonSqlTypeDescriptor {
             protected void doBind(PreparedStatement st, X value, int index, WrapperOptions options) throws SQLException {
                 st.setObject(index, javaTypeDescriptor.unwrap(value, JsonNode.class, options), getSqlType());
             }
-
             @Override
             protected void doBind(CallableStatement st, X value, String name, WrapperOptions options)
                     throws SQLException {

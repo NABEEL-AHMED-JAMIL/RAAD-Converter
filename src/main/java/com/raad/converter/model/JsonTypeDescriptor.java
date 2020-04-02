@@ -14,28 +14,20 @@ public class JsonTypeDescriptor extends AbstractTypeDescriptor<Object> implement
     @Override
     public void setParameterValues(Properties parameters) {
         jsonObjectClass = ( (ParameterType) parameters.get( PARAMETER_TYPE ) ).getReturnedClass();
-
     }
 
     public JsonTypeDescriptor() {
         super( Object.class, new MutableMutabilityPlan<Object>() {
             @Override
-            protected Object deepCopyNotNull(Object value) {
-                return JacksonUtil.clone(value);
-            }
+            protected Object deepCopyNotNull(Object value) { return JacksonUtil.clone(value); }
         });
     }
 
     @Override
     public boolean areEqual(Object one, Object another) {
-        if ( one == another ) {
-            return true;
-        }
-        if ( one == null || another == null ) {
-            return false;
-        }
-        return JacksonUtil.toJsonNode(JacksonUtil.toString(one)).equals(
-                JacksonUtil.toJsonNode(JacksonUtil.toString(another)));
+        if(one == another) { return true; }
+        if(one == null || another == null) { return false; }
+        return JacksonUtil.toJsonNode(JacksonUtil.toString(one)).equals(JacksonUtil.toJsonNode(JacksonUtil.toString(another)));
     }
 
     @Override
@@ -51,23 +43,15 @@ public class JsonTypeDescriptor extends AbstractTypeDescriptor<Object> implement
     @SuppressWarnings({ "unchecked" })
     @Override
     public <X> X unwrap(Object value, Class<X> type, WrapperOptions options) {
-        if ( value == null ) {
-            return null;
-        }
-        if ( String.class.isAssignableFrom( type ) ) {
-            return (X) toString(value);
-        }
-        if ( Object.class.isAssignableFrom( type ) ) {
-            return (X) JacksonUtil.toJsonNode(toString(value));
-        }
-        throw unknownUnwrap( type );
+        if(value == null) { return null; }
+        if(String.class.isAssignableFrom(type)) { return (X) toString(value); }
+        if(Object.class.isAssignableFrom(type)) { return (X) JacksonUtil.toJsonNode(toString(value)); }
+        throw unknownUnwrap(type);
     }
 
     @Override
     public <X> Object wrap(X value, WrapperOptions options) {
-        if ( value == null ) {
-            return null;
-        }
+        if(value == null) { return null; }
         return fromString(value.toString());
     }
 

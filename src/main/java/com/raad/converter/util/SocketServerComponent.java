@@ -71,7 +71,11 @@ public class SocketServerComponent {
             socketIOClient = this.socketIOServer.getClient(UUID.fromString(socketClientInfo.getUuid()));
             if (socketIOClient != null) {
                 Thread.sleep(100);
-                socketIOClient.sendEvent("connectionMessage", decode(jsonMeg));
+                if(socketClientInfo.getSendEventPath() != null && !socketClientInfo.getSendEventPath().equals("")) {
+                    socketIOClient.sendEvent(socketClientInfo.getSendEventPath(), decode(jsonMeg));
+                } else {
+                    socketIOClient.sendEvent("connectionMessage", decode(jsonMeg));
+                }
             }
         }
         return socketIOClient;
