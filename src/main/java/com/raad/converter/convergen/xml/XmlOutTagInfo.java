@@ -33,9 +33,6 @@ import java.util.*;
 
 @Component
 @Scope(value="prototype")
-/**
- * Gen method for create the xml with out attribute
- * */
 public class XmlOutTagInfo extends XSDOutTagInfo {
 
     public Logger logger = LoggerFactory.getLogger(XmlOutTagInfo.class);
@@ -201,6 +198,8 @@ public class XmlOutTagInfo extends XSDOutTagInfo {
     private void addTagValue(Document htmlDocument, org.w3c.dom.Document xmlDoc, org.w3c.dom.Element child, String html_tag) throws Exception {
         if(html_tag != null && !html_tag.equals(BLANK)) {
             child.appendChild(xmlDoc.createTextNode(getText(htmlDocument, html_tag)));
+        } else {
+            child.appendChild(xmlDoc.createTextNode(SPACE));
         }
     }
 

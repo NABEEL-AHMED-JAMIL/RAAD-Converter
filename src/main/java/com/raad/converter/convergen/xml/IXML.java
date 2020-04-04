@@ -19,6 +19,7 @@ public interface IXML {
     final String PAGE_URL = "page_url";
     //============other detail =======
     final String BLANK = "";
+    final String SPACE = " ";
     final String COMMA = ",";
     final String START = "*";
     final String XS_ELEMENT = "xs:element";
