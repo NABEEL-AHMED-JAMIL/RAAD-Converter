@@ -12,6 +12,8 @@ import org.jodconverter.document.DefaultDocumentFormatRegistry;
 import org.jodconverter.document.DocumentFormat;
 import org.jodconverter.office.OfficeException;
 import org.jodconverter.office.OfficeManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -25,7 +27,8 @@ import java.util.concurrent.*;
 @Component
 @Scope(value="prototype")
 public class RaadStreamConverter implements IRaadStreamConverter {
-
+    
+    public Logger logger = LoggerFactory.getLogger(RaadStreamConverter.class);
 //    0: PDF 1.4 (default selection)
 //    1: PDF/A-1 (ISO 19005-1:2005)
 //    Example: new Integer(1)
@@ -38,6 +41,7 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     private String html = "<!DOCTYPE html>\n" + "<html>\n" + "\t<head>\n" + "\t</head>\n" +
             "<body>\n" + "<p>%s</p>\n" + "</body>\n" + "</html>\n";
 
+    private static volatile boolean isRDInitialized = false;
     @Autowired
     private OfficeManager officeManager;
     @Autowired
@@ -48,10 +52,13 @@ public class RaadStreamConverter implements IRaadStreamConverter {
 
     @PostConstruct
     public void init() {
-        System.out.println("Office Manager Init");
-        this.converter = LocalConverter.builder().storeProperties(getStoreProperties())
-           .officeManager(officeManager).build();
-        System.out.println("Office Manager End");
+        if(!isRDInitialized) {
+            logger.info("Office Manager Init");
+            this.converter = LocalConverter.builder().storeProperties(getStoreProperties())
+                    .officeManager(officeManager).build();
+            logger.info("Office Manager End");
+            isRDInitialized = true;
+        }
     }
 
     /**
@@ -75,7 +82,7 @@ public class RaadStreamConverter implements IRaadStreamConverter {
                     inputStream = new ByteArrayInputStream(text.getBytes());
                     return convert(inputStream, sourceFileName, targetFileName, outputStream);
                 } catch (Exception ex) {
-                    System.out.println("===========>>Hwp File Try Itext<<===========");
+                    logger.info("===========>>Hwp File Try Itext<<===========");
                     String tempHtml = String.format(html, text.replaceAll("\\s+", " "));
                     inputStream = new ByteArrayInputStream(tempHtml.getBytes());
                     return hwpTextToPdfV2(inputStream,  outputStream);
@@ -140,9 +147,9 @@ public class RaadStreamConverter implements IRaadStreamConverter {
                 if(inputStream != null) { inputStream.close(); }
                 return byteArrayOutputStream;
             };
-            System.out.println("Submitting Callable");
+            logger.info("Submitting Callable");
             Future<ByteArrayOutputStream> future = executor.submit(callable);
-            System.out.println("Do something else while callable is getting executed");
+            logger.info("Do something else while callable is getting executed");
             return future.get(10, TimeUnit.MINUTES);
         } catch (Exception ex) {
             throw new Exception("File Not Convert In given time");

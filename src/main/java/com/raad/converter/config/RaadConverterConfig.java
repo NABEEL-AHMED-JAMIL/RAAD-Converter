@@ -1,5 +1,6 @@
 package com.raad.converter.config;
 
+import com.raad.converter.worker.AsyncDALTaskExecutor;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class RaadConverterConfig {
@@ -32,6 +34,16 @@ public class RaadConverterConfig {
         logger.info("SocketIOServer-IO Detail :- " + config);
         logger.info("===============SocketIOServer-End===============");
         return new SocketIOServer(config);
+    }
+
+    @Bean
+    @Scope("singleton")
+    public AsyncDALTaskExecutor asyncDALTaskExecutor() throws Exception {
+        AsyncDALTaskExecutor taskExecutor = null;
+        logger.info("===============Application-DAL-INIT===============");
+        taskExecutor = new AsyncDALTaskExecutor(20, 50, 1);
+        logger.info("===============Application-DAL-END===============");
+        return taskExecutor;
     }
 
     @Bean
