@@ -36,7 +36,8 @@ public class PriorityFuture<T> implements RunnableFuture<T> {
     }
 
     @Override
-    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public T get(long timeout, TimeUnit unit) throws InterruptedException,
+            ExecutionException, TimeoutException {
         return src.get();
     }
 

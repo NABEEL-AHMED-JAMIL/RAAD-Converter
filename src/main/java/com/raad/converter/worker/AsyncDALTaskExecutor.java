@@ -27,11 +27,11 @@ public class AsyncDALTaskExecutor {
 
     public AsyncDALTaskExecutor(Integer minThreads, Integer maxThreads, Integer threadLifeInMins) {
         logger.info(">============AsyncDALTaskExecutor Start Successful============<");
-        this.threadPool = new ThreadPoolExecutor(minThreads, maxThreads,threadLifeInMins, TimeUnit.MINUTES, queue);
-        // Add Task back in the pool after waiting for 1 sec
+        this.threadPool = new ThreadPoolExecutor(minThreads, maxThreads,threadLifeInMins, TimeUnit.NANOSECONDS, queue);
+        // Add Task back in the pool after waiting for 1
         this.threadPool.setRejectedExecutionHandler(new RejectedExecutionHandler() {
             public void rejectedExecution(Runnable task, ThreadPoolExecutor executor) {
-                logger.error("Task Rejected : " + task.getClass().getCanonicalName());
+                logger.error("Task Rejected : {}" , task.getClass().getCanonicalName());
                 executor.execute(task);
             }
         });
@@ -40,7 +40,7 @@ public class AsyncDALTaskExecutor {
             public void run() {
                 logger.info("AsyncDAL Active No Threads: " + threadPool.getActiveCount() + " Core no of Threads: " +
                 threadPool.getCorePoolSize() + " Current no of threads: " +
-                threadPool.getPoolSize() + " current Queue Size: " + queue.size() + " Max allowed Threads: " +
+                threadPool.getPoolSize() + " Current Queue Size: " + queue.size() + " Max allowed Threads: " +
                         threadPool.getMaximumPoolSize());
             }
         }, 5 * 60 * 1000, 60000);

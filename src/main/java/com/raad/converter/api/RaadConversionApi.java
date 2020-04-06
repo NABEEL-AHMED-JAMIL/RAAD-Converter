@@ -4,7 +4,6 @@ import com.raad.converter.convergen.RaadStreamConverter;
 import com.raad.converter.convergen.ScraperConstant;
 import com.raad.converter.domain.FilePath;
 import com.raad.converter.domain.FileWithObject;
-import com.raad.converter.util.ExceptionUtil;
 import com.raad.converter.util.LocalFileHandler;
 import com.raad.converter.util.ScreenShoot;
 import io.swagger.annotations.Api;

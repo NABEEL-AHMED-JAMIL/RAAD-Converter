@@ -2,7 +2,6 @@ package com.raad.converter.aws.imp;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.HttpMethod;
-import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -15,10 +14,12 @@ import com.raad.converter.aws.AwsProperties;
 import com.raad.converter.aws.IAwsBucketManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     private AmazonS3 amazonS3;
 
     @Override
-    public String createBucket(String bucketName) throws SdkClientException, AmazonClientException {
+    public String createBucket(String bucketName) throws AmazonClientException {
         String bucketLocation = null;
         if(this.isBucketExist(bucketName)) {
             this.amazonS3.createBucket(new CreateBucketRequest(bucketName));
@@ -47,15 +48,15 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     }
 
     @Override
-    public boolean isBucketExist(String bucketName) throws SdkClientException, AmazonClientException {
+    public boolean isBucketExist(String bucketName) throws AmazonClientException {
         if(bucketName != null && !bucketName.equals("")) {
-            return this.amazonS3.doesBucketExist(bucketName);
+            return this.amazonS3.doesBucketExistV2(bucketName);
         }
         throw new NullPointerException("Invalid bucket name");
     }
 
     @Override
-    public Set<String> listBuckets() throws SdkClientException, AmazonClientException {
+    public Set<String> listBuckets() throws AmazonClientException {
         Set<String> bucketsDetail = new HashSet<>();
         for (Bucket bucket : this.amazonS3.listBuckets()) {
             logger.info(" -----> " + bucket.getName());
@@ -66,14 +67,15 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
 
     @Override
     public List<String> listByFullPathPrefix(final String bucket, final String s3prefix) throws AmazonClientException {
-        return this.amazonS3.listObjects(bucket, s3prefix).getObjectSummaries()
-             .stream().map(S3ObjectSummary::getKey)
+        return this.amazonS3.listObjects(bucket, s3prefix)
+             .getObjectSummaries().stream()
+             .map(S3ObjectSummary::getKey)
              .collect(Collectors.toList());
     }
 
     @Override
-    public boolean deleteBucket(String bucketName) throws SdkClientException, AmazonClientException {
-        if (this.amazonS3.doesBucketExist(bucketName)) {
+    public boolean deleteBucket(String bucketName) throws AmazonClientException {
+        if (this.amazonS3.doesBucketExistV2(bucketName)) {
             this.amazonS3.deleteBucket(bucketName);
             return true;
         }
@@ -81,7 +83,7 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     }
 
     @Override
-    public boolean isObjKeyExist(String bucketName, String objectKey) throws SdkClientException, AmazonClientException {
+    public boolean isObjKeyExist(String bucketName, String objectKey) throws AmazonClientException {
         if(isBucketExist(bucketName) && (objectKey != null && !objectKey.equals(""))) {
             return this.amazonS3.doesObjectExist(bucketName,objectKey);
         }
@@ -89,7 +91,7 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     }
 
     @Override
-    public Map<String, Object> uploadToBucket(File file, String bucketName) throws SdkClientException, AmazonClientException {
+    public Map<String, Object> uploadToBucket(File file, String bucketName) throws AmazonClientException {
         String objKey = this.generateFileName(file);
         logger.debug("Uploading a new object to S3 from a file > " + objKey);
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, objKey, file);
@@ -97,7 +99,7 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
         /* get signed URL (valid for 2 years day) */
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, objKey);
         generatePresignedUrlRequest.setMethod(HttpMethod.GET);
-        //generatePresignedUrlRequest.setExpiration(DateTime.now().plusYears(2).toDate());
+        generatePresignedUrlRequest.setExpiration(DateTime.now().plusYears(2).toDate());
         URL signedUrl = this.amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
         // raw data (bucket-name,key,url,size,stock-id)
         HashMap<String, Object> s3Response = new HashMap<>();
@@ -109,14 +111,33 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     }
 
     @Override
-    public boolean deleteBucketObject(String objKey, String bucketName) throws SdkClientException, AmazonClientException {
+    public Map<String, Object> uploadToBucket(InputStream inputStream, String fileName, String bucketName) throws AmazonClientException {
+        logger.debug("Uploading a new object to S3 from a file > " + fileName);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, inputStream, new ObjectMetadata());
+        this.amazonS3.putObject(putObjectRequest);
+        /* get signed URL (valid for 2 years day) */
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, fileName);
+        generatePresignedUrlRequest.setMethod(HttpMethod.GET);
+        generatePresignedUrlRequest.setExpiration(DateTime.now().plusYears(2).toDate());
+        URL signedUrl = this.amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
+        // raw data (bucket-name,key,url,size,stock-id)
+        HashMap<String, Object> s3Response = new HashMap<>();
+        s3Response.put(BUCKET_NAME, bucketName);
+        s3Response.put(OBJ_KEY, fileName);
+        s3Response.put(SIGNED_URL, signedUrl);
+        logger.info("Detail :- " + s3Response);
+        return s3Response;
+    }
+
+    @Override
+    public boolean deleteBucketObject(String objKey, String bucketName) throws AmazonClientException {
         logger.warn("Deleting an object");
         this.amazonS3.deleteObject(bucketName, objKey);
         return true;
     }
 
     @Override
-    public void listBucketObjects(String bucketName) throws SdkClientException, AmazonClientException {
+    public void listBucketObjects(String bucketName) throws AmazonClientException {
         ObjectListing objectListing = this.amazonS3.
              listObjects(new ListObjectsRequest().withBucketName(bucketName).withPrefix("My "));
         for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
@@ -125,28 +146,28 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     }
 
     @Override
-    public S3Object getSource(String bucketName, String fileName) throws SdkClientException, AmazonClientException{
+    public S3Object getSource(String bucketName, String fileName) throws AmazonClientException{
         return this.amazonS3.getObject(bucketName, fileName);
     }
 
     @Override
-    public ObjectListing getListing(String bucketName, String prefix) throws SdkClientException, AmazonClientException {
+    public ObjectListing getListing(String bucketName, String prefix) throws AmazonClientException {
         return this.amazonS3.listObjects(bucketName, prefix);
     }
 
     @Override
-    public Map<String, Object> getObjectMetadata(String objKey, String bucketName) throws SdkClientException, AmazonClientException {
+    public Map<String, Object> getObjectMetadata(String objKey, String bucketName) throws AmazonClientException {
         return this.amazonS3.getObject(new GetObjectRequest(bucketName, objKey))
              .getObjectMetadata().getRawMetadata();
     }
 
     @Override
-    public AWSCredentials credentials(AwsProperties awsProperties) throws SdkClientException, AmazonClientException {
+    public AWSCredentials credentials(AwsProperties awsProperties) throws AmazonClientException {
         return new BasicAWSCredentials(awsProperties.getAccessKey(), awsProperties.getSecretKey());
     }
 
     @Override
-    public void amazonS3(AwsProperties awsProperties) throws SdkClientException, AmazonClientException {
+    public void amazonS3(AwsProperties awsProperties) throws AmazonClientException {
         logger.debug("+================AWS--START====================+");
         this.amazonS3 = AmazonS3ClientBuilder.standard()
           .withCredentials(new AWSStaticCredentialsProvider(this.credentials(awsProperties)))
@@ -155,7 +176,7 @@ public class AwsBucketManagerImpl implements IAwsBucketManager {
     }
 
     @Override
-    public void amazonS3Default(AwsProperties awsProperties) throws SdkClientException, AmazonClientException {
+    public void amazonS3Default(AwsProperties awsProperties) throws AmazonClientException {
         logger.debug("+================AWS--START====================+");
         this.amazonS3 = AmazonS3ClientBuilder.standard().withRegion(awsProperties.getRegion()).build();
         logger.debug("+================AWS-S3-END====================+");

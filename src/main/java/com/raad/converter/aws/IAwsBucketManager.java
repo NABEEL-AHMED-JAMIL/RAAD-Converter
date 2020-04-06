@@ -2,11 +2,11 @@ package com.raad.converter.aws;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +25,13 @@ public interface IAwsBucketManager extends IAws {
 
     public Map<String, Object> uploadToBucket(final File file, final String bucketName) throws AmazonClientException;
 
+    public Map<String, Object> uploadToBucket(InputStream inputStream, String fileName, String bucketName) throws AmazonClientException;
+
     public List<String> listByFullPathPrefix(final String bucket, final String s3prefix) throws AmazonClientException;
 
     public boolean deleteBucketObject(final String objKey, final String bucketName) throws AmazonClientException;
 
-    public ObjectListing getListing(String bucketName, String prefix) throws SdkClientException, AmazonClientException;
+    public ObjectListing getListing(String bucketName, String prefix) throws AmazonClientException;
 
     public void listBucketObjects(String bucketName) throws AmazonClientException;
 
