@@ -1,11 +1,11 @@
 package com.raad.converter.util;
 
-import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 
+import com.raad.converter.domain.FileSocket;
 import com.raad.converter.model.beans.SocketClientInfo;
 import com.raad.converter.model.repository.SocketClientInfoRepository;
 import org.apache.logging.log4j.LogManager;
@@ -107,6 +107,24 @@ public class SocketServerComponent {
         return socketIOClient;
     }
 
+    public SocketIOClient sendSocketEventToClient(String token, FileSocket fileSocket) throws Exception {
+        logger.info("Send Message With token = {}", token);
+        SocketIOClient socketIOClient = null;
+        SocketClientInfo socketClientInfo = this.socketClientInfoRepository.findByToken(token);
+        if (socketClientInfo != null) {
+            socketIOClient = this.socketIOServer.getClient(UUID.fromString(socketClientInfo.getUuid()));
+            if (socketIOClient != null) {
+                Thread.sleep(100);
+                if(socketClientInfo.getSendEventPath() != null && !socketClientInfo.getSendEventPath().equals("")) {
+                    socketIOClient.sendEvent(socketClientInfo.getSendEventPath(), fileSocket);
+                } else {
+                    socketIOClient.sendEvent("uploadFileMessage", fileSocket);
+                }
+            }
+        }
+        return socketIOClient;
+    }
+
     private void saveSocketClientInfo(String session, String token) {
         SocketClientInfo socketClientInfo = this.socketClientInfoRepository.findByToken(token);
         if (socketClientInfo == null) {
@@ -122,7 +140,7 @@ public class SocketServerComponent {
     }
 
     public int i=0;
-    @Scheduled(fixedDelay = 500)
+    //@Scheduled(fixedDelay = 500)
     public void scheduleFixedDelayTask() throws Exception {
         if(i == 101) {
             i=0;

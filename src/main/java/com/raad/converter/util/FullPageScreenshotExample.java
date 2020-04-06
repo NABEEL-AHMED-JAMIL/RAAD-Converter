@@ -40,37 +40,6 @@ public class FullPageScreenshotExample {
 		dump(outputFilename, page.captureScreenshot(CaptureScreenshotFormat.PNG, 100, viewport, Boolean.TRUE));
 	}
 
-	public static void main(String[] args) {
-		// Create chrome launcher.
-		final ChromeLauncher launcher = new ChromeLauncher();
-		// Launch chrome either as headless (true) or regular (false).
-		final ChromeService chromeService = launcher.launch(true);
-		// Create empty tab ie about:blank.
-		final ChromeTab tab = chromeService.createTab();
-		// Get DevTools service to this tab
-		final ChromeDevToolsService devToolsService = chromeService.createDevToolsService(tab);
-		// Get individual commands
-		final Page page = devToolsService.getPage();
-		String fileName = "C:\\Users\\Noman.Alahi\\Desktop\\Testing\\screenshot3.png";
-		page.onLoadEventFired(event -> {
-			System.out.println("Taking screenshot...");
-			captureFullPageScreenshot(devToolsService, page, fileName);
-			System.out.println("Done!");
-			devToolsService.close();
-		});
-		// Enable page events.
-		page.enable();
-		// Navigate to github.com.
-		page.navigate("https://angular.io/");
-		devToolsService.waitUntilClosed();
-		try(PDDocument doc = new PDDocument()) {
-			addImageAsNewPage(doc,fileName);
-			doc.save("C:\\Users\\Noman.Alahi\\Desktop\\Testing\\SampleScreenShot.pdf");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
 	private static void dump(String fileName, String data) {
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -115,4 +84,35 @@ public class FullPageScreenshotExample {
 			e.printStackTrace(System.err);
 		}
 	}
+
+//	public static void main(String[] args) {
+//		// Create chrome launcher.
+//		final ChromeLauncher launcher = new ChromeLauncher();
+//		// Launch chrome either as headless (true) or regular (false).
+//		final ChromeService chromeService = launcher.launch(true);
+//		// Create empty tab ie about:blank.
+//		final ChromeTab tab = chromeService.createTab();
+//		// Get DevTools service to this tab
+//		final ChromeDevToolsService devToolsService = chromeService.createDevToolsService(tab);
+//		// Get individual commands
+//		final Page page = devToolsService.getPage();
+//		String fileName = "C:\\Users\\Noman.Alahi\\Desktop\\Testing\\screenshot3.png";
+//		page.onLoadEventFired(event -> {
+//			System.out.println("Taking screenshot...");
+//			captureFullPageScreenshot(devToolsService, page, fileName);
+//			System.out.println("Done!");
+//			devToolsService.close();
+//		});
+//		// Enable page events.
+//		page.enable();
+//		// Navigate to github.com.
+//		page.navigate("https://angular.io/");
+//		devToolsService.waitUntilClosed();
+//		try(PDDocument doc = new PDDocument()) {
+//			addImageAsNewPage(doc,fileName);
+//			doc.save("C:\\Users\\Noman.Alahi\\Desktop\\Testing\\SampleScreenShot.pdf");
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
+//	}
 }

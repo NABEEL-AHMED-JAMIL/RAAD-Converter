@@ -33,7 +33,6 @@ public class AsyncDALTaskExecutor {
             public void rejectedExecution(Runnable task, ThreadPoolExecutor executor) {
                 logger.error("Task Rejected : " + task.getClass().getCanonicalName());
                 executor.execute(task);
-                executor.shutdown();
             }
         });
         (new Timer()).schedule(new TimerTask() {

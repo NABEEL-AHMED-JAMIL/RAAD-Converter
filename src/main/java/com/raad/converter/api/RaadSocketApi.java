@@ -62,7 +62,7 @@ public class RaadSocketApi {
             this.fileDownloadWorker.setWorkerName("FileDownloadByRunnableWorker-"+priority);
             this.fileDownloadWorker.fileDownload(fileDetail);
             this.asyncDALTaskExecutor.addTask(this.fileDownloadWorker);
-            return ResponseEntity.badRequest().body(new ResponseDTO("Your Process Start", fileDetail));
+            return ResponseEntity.ok().body(new ResponseDTO("Your Process Start", fileDetail));
         } catch (Exception ex) {
             logger.error("/file/download " + ExceptionUtil.getRootCauseMessage(ex));
             return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
