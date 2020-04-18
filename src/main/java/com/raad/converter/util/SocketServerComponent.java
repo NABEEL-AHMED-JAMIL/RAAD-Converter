@@ -2,6 +2,7 @@ package com.raad.converter.util;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 
@@ -21,6 +22,8 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import com.google.common.base.CharMatcher;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @Scope(value="prototype")
@@ -55,6 +58,11 @@ public class SocketServerComponent {
             HandshakeData handshakeData = client.getHandshakeData();
             logger.info("Client[{}] - Connected to socket through '{}'" , client.getSessionId().toString() ,
                     handshakeData.getUrl());
+//            MultiValueMap<String, String> parameters = UriComponentsBuilder.fromUriString(handshakeData.getUrl()).build().getQueryParams();
+//            List<String> param1 = parameters.get("token");
+//            if(param1 != null && param1.size() > 0) {
+//                saveSocketClientInfo(client.getSessionId().toString(), param1.get(0));
+//            }
         };
     }
 

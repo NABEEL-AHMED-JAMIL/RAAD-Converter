@@ -1,6 +1,8 @@
 package com.raad.converter.api;
 
 
+import com.raad.converter.domain.FileSocket;
+import com.raad.converter.domain.ImageCompare;
 import com.raad.converter.util.ReadTextFromImageProcessor;
 import com.raad.converter.domain.ImageProcessReqeust;
 import com.raad.converter.domain.ResponseDTO;
@@ -62,7 +64,22 @@ public class RaadImageProcessingApi {
             return ResponseEntity.ok().body(response);
         } catch (Exception ex) {
             logger.error("imageTextReader -- Error occurred " + ex);
-            return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+            return ResponseEntity.ok().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+        }
+    }
+
+    @RequestMapping(path = "/image-text-reader",  method = RequestMethod.POST)
+    public ResponseEntity<?> imageCompareReader(ImageCompare imageCompare) {
+        try {
+            ResponseDTO response = new ResponseDTO();
+            response.setMessage("Success Process");
+            FileSocket fileSocket = imageCompare(imageCompare);
+            response.setData(fileSocket);
+            response.setText("Image Compare");
+            return ResponseEntity.ok().body(response);
+        } catch (Exception ex) {
+            logger.error("imageTextReader -- Error occurred " + ex);
+            return ResponseEntity.ok().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
         }
     }
 
@@ -851,6 +868,15 @@ public class RaadImageProcessingApi {
         return ImageIO.read(new ByteArrayInputStream(mob.toArray()));
     }
 
+    public FileSocket imageCompare(ImageCompare imageCompare) {
+        // first convert the stream to mat image
+        Mat oldImageMat = bufferedImageToMatV1(ImageIO.read(imageCompare.getOldImage().getInputStream()));
+        Mat newImageMat = bufferedImageToMatV1(ImageIO.read(imageCompare.getNewImage().getInputStream()));
+        // convert both image into gray scale
+
+        return null;
+    }
+
     public String readTextFromImage(BufferedImage img) throws Exception {
         logger.info("Process For Read Text From Image");
         return this.instance.doOCR(img);
@@ -859,6 +885,13 @@ public class RaadImageProcessingApi {
     // change IMREAD_GRAYSCALE
     public static Mat bufferedImageToMat(BufferedImage bi) {
         Mat mat = new Mat(bi.getHeight(), bi.getWidth(), CvType.CV_8UC3);
+        byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
+        mat.put(0, 0, data);
+        return mat;
+    }
+
+    public static Mat bufferedImageToMatV1(BufferedImage bi) {
+        Mat mat = new Mat();
         byte[] data = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
         mat.put(0, 0, data);
         return mat;
