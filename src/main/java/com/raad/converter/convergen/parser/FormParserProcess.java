@@ -4,6 +4,7 @@ import com.raad.converter.domain.FormParser;
 import com.raad.converter.domain.FormResponse;
 import com.raad.converter.domain.ResponseDTO;
 import com.raad.converter.util.HtmlAsDocument;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,16 +21,17 @@ import java.util.*;
 //https://stackoverflow.com/questions/19860392/how-to-get-previous-element-using-jsoup-from-my-current-element-instance-using-j
 public class FormParserProcess {
 
-
     private String FORM = "FORM";
     private String LABEL = "LABEL";
     private String SELECT = "SELECT";
     private String BUTTON = "BUTTON";
     private String INPUT = "INPUT";
+    private String TEXTAREA = "TEXTAREA";
+    private String IMAGE_BUTTON = "IMG";
 
     private String TEXT = "TEXT";
     private String PASSWORD = "PASSWORD";
-    private String CHECKBOX = "checkbox";
+    private String CHECKBOX = "CHECKBOX";
     private String RADIO = "RADIO";
     private String SUBMIT = "SUBMIT";
     private String RESET = "RESET";
@@ -65,12 +67,16 @@ public class FormParserProcess {
                 // select all child tags of the form
                 this.processV1(formElem.select("*"));
             }
-            HashMap<String, Object> object = new HashMap<>();
-            object.put("controlTypes", this.controlTypes);
-            object.put("formResponse", this.formResponse);
-            return new ResponseDTO("Success Process", object);
+            if(this.formResponse != null && this.formResponse.size() > 0) {
+                HashMap<String, Object> object = new HashMap<>();
+                object.put("controlTypes", this.controlTypes);
+                object.put("formResponse", this.formResponse);
+                return new ResponseDTO("Success Process", object);
+            } else {
+                return new ResponseDTO("Incorrect Search Form Tag defined", null);
+            }
         } else {
-            return new ResponseDTO("Process Fail", null);
+            return new ResponseDTO("Incorrect Search Form Tag defined", null);
         }
     }
 
@@ -78,16 +84,29 @@ public class FormParserProcess {
         for(Element formChild : formChildren) {
             // if child have more child the its deep process
             FormResponse formResponse = new FormResponse();
+            // || formChild.tagName().equalsIgnoreCase(TEXTAREA)
             if(formChild.tagName().equalsIgnoreCase(INPUT)) {
                 Attributes attributes = formChild.attributes();
                 //formResponse.setExt(formChild.attributes());
                 if(attributes.hasKey(TYPE)) {
-                    if(attributes.get(TYPE).equalsIgnoreCase(HIDDEN)) { continue; }
-                    formResponse.setControlType(attributes.get(TYPE).toUpperCase());
+                    if(attributes.get(TYPE).equalsIgnoreCase(HIDDEN)) { // HIDDEN
+                        continue;
+                    } else if(attributes.get(TYPE).equalsIgnoreCase(CHECKBOX)) {
+                        formResponse.setControlType(CHECKBOX); // CHECK BOX
+                    } else if (attributes.get(TYPE).equalsIgnoreCase(RADIO)) {
+                        formResponse.setControlType(RADIO); // RADIO
+                    } else if (attributes.get(TYPE).equalsIgnoreCase(SUBMIT)) {
+                        formResponse.setControlType(SUBMIT); // SUBMIT
+                    }  else if (attributes.get(TYPE).equalsIgnoreCase(BUTTON)){
+                        formResponse.setControlType(BUTTON); // TEXT BUTTON
+                    } else {
+                        formResponse.setControlType(TEXT); // TEXT BOX pass,text
+                    }
                 } else {
+                    // TEXT BOX
                     formResponse.setControlType(TEXT);
                 }
-                if(formChild.cssSelector() != null && !formChild.cssSelector().equals("")) {
+                if(!StringUtils.isEmpty(formChild.cssSelector())) {
                     formResponse.setHtmlTag(formChild.cssSelector());
                 }
                 if(formResponse.getControlType().equals(RADIO) || formResponse.getControlType().equals(CHECKBOX)) {
@@ -110,40 +129,44 @@ public class FormParserProcess {
                                 formChildren.get(formChildren.indexOf(formChild) - 2).tagName().equalsIgnoreCase(LABEL)) {
                             formResponse.setControlName(formChildren.get(formChildren.indexOf(formChild) - 2).text().toUpperCase());
                         }
-                    } else if(formChild.text() != null && !formChild.text().equals("")) {
+                    } else if(!StringUtils.isEmpty(formChild.text())) {
                         formResponse.setControlName(formChild.text().toUpperCase());
                     }
                 }
-                if(formResponse.getControlName() == null && attributes.hasKey(ID)) {
+                if(StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(ID)) {
                     formResponse.setControlName(attributes.get(ID).toUpperCase());
-                } else if(formResponse.getControlName() == null && attributes.hasKey(NAME)) {
+                } else if(StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(NAME)) {
                     formResponse.setControlName(attributes.get(NAME).toUpperCase());
-                } else if(formResponse.getControlName() == null && attributes.hasKey(VALUE)) {
+                } else if(StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(VALUE)) {
                     formResponse.setControlName(attributes.get(VALUE).toUpperCase());
                 }
                 this.formResponse.add(formResponse);
                 this.controlTypes.add(formResponse.getControlType());
             } else if(formChild.tagName().equalsIgnoreCase(BUTTON)) {
-                if(formChild.text() != null && !formChild.text().equals("")) {
+                if(!StringUtils.isEmpty(formChild.text())) {
                     formResponse.setControlName(formChild.text().toUpperCase());
                 }
-                if(formChild.cssSelector() != null && !formChild.cssSelector().equals("")) {
+                if(!StringUtils.isEmpty(formChild.cssSelector())) {
                     formResponse.setHtmlTag(formChild.cssSelector());
                 }
                 Attributes attributes = formChild.attributes();
                 //formResponse.setExt(formChild.attributes());
                 if(attributes.hasKey(TYPE)) {
-                    formResponse.setControlType(attributes.get(TYPE).toUpperCase());
+                    if(attributes.get(TYPE).equalsIgnoreCase(SUBMIT)) { // button as submit
+                        formResponse.setControlType(SUBMIT);
+                    } else {
+                        formResponse.setControlType(BUTTON); // button simple button
+                    }
                 }
-                if(attributes.hasKey(TITLE) && formResponse.getControlName() == null) {
+                if(StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(TITLE)) {
                     formResponse.setControlName(attributes.get(TITLE).toUpperCase());
-                } else if(attributes.hasKey(VALUE) && formResponse.getControlName() == null) {
+                } else if(StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(VALUE)) {
                     formResponse.setControlName(attributes.get(VALUE).toUpperCase());
-                } else if(attributes.hasKey(NAME) && formResponse.getControlName() == null) {
+                } else if(StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(NAME)) {
                     formResponse.setControlName(attributes.get(NAME).toUpperCase());
                 }
-                if(formResponse.getControlType() == null) {
-                    formResponse.setControlType(BUTTON);
+                if(StringUtils.isEmpty(formResponse.getControlType())) {
+                    formResponse.setControlType(BUTTON); // button simple button
                 }
                 this.formResponse.add(formResponse);
                 this.controlTypes.add(formResponse.getControlType());
@@ -153,11 +176,11 @@ public class FormParserProcess {
                 formResponse.setControlType(DROPDOWN);
                 Attributes attributes = formChild.attributes();
                 //formResponse.setExt(formChild.attributes());
-                if(formResponse.getControlName() == null && attributes.hasKey(NAME)) {
+                if( StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(NAME)) {
                     formResponse.setControlName(attributes.get(NAME).toUpperCase());
-                } else if(formResponse.getControlName() == null && attributes.hasKey(ID)) {
+                } else if( StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(ID)) {
                     formResponse.setControlName(attributes.get(ID).toUpperCase());
-                } else if(formResponse.getControlName() == null && attributes.hasKey(VALUE)) {
+                } else if( StringUtils.isEmpty(formResponse.getControlName()) && attributes.hasKey(VALUE)) {
                     formResponse.setControlName(attributes.get(VALUE).toUpperCase());
                 } else if(formChildren.get(formChildren.indexOf(formChild) - 1) != null &&
                         formChildren.get(formChildren.indexOf(formChild) - 1).tagName().equalsIgnoreCase(LABEL)) {
@@ -180,5 +203,4 @@ public class FormParserProcess {
             }
         }
     }
-
 }

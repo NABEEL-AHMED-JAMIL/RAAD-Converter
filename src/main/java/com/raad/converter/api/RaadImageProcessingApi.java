@@ -27,6 +27,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.UUID;
 
 import static org.opencv.imgcodecs.Imgcodecs.IMREAD_GRAYSCALE;
@@ -68,7 +69,7 @@ public class RaadImageProcessingApi {
         }
     }
 
-    @RequestMapping(path = "/image-text-reader",  method = RequestMethod.POST)
+    @RequestMapping(path = "/image-compare-reader",  method = RequestMethod.POST)
     public ResponseEntity<?> imageCompareReader(ImageCompare imageCompare) {
         try {
             ResponseDTO response = new ResponseDTO();
@@ -868,7 +869,7 @@ public class RaadImageProcessingApi {
         return ImageIO.read(new ByteArrayInputStream(mob.toArray()));
     }
 
-    public FileSocket imageCompare(ImageCompare imageCompare) {
+    public FileSocket imageCompare(ImageCompare imageCompare) throws IOException {
         // first convert the stream to mat image
         Mat oldImageMat = bufferedImageToMatV1(ImageIO.read(imageCompare.getOldImage().getInputStream()));
         Mat newImageMat = bufferedImageToMatV1(ImageIO.read(imageCompare.getNewImage().getInputStream()));
