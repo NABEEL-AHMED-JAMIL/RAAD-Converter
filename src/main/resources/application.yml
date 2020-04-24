@@ -60,13 +60,3 @@ spring:
     jackson:
         serialization:
             fail-on-empty-beans: false
----
-# ===============================
-# = Jwt Detail ==================
-# ===============================
-jwt:
-    app:
-        name: barco
-    header: Authorization
-    expires_in: 600
-    secret: barco_ballistic
