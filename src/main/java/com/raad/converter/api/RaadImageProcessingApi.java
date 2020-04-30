@@ -1,11 +1,9 @@
 package com.raad.converter.api;
 
 
-import com.raad.converter.domain.FileSocket;
-import com.raad.converter.domain.ImageCompare;
+import com.raad.converter.comparison.ImageComparison;
+import com.raad.converter.domain.*;
 import com.raad.converter.util.ReadTextFromImageProcessor;
-import com.raad.converter.domain.ImageProcessReqeust;
-import com.raad.converter.domain.ResponseDTO;
 import com.raad.converter.util.ExceptionUtil;
 import io.swagger.annotations.Api;
 import net.sourceforge.tess4j.ITesseract;
@@ -28,7 +26,10 @@ import java.awt.image.DataBufferByte;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.opencv.imgcodecs.Imgcodecs.IMREAD_GRAYSCALE;
 
@@ -42,6 +43,8 @@ public class RaadImageProcessingApi {
     public Logger logger = LoggerFactory.getLogger(RaadImageProcessingApi.class);
 
     public String PNG = ".png";
+    private ResponseDTO response;
+    private Map<String, Object> extData;
 
     public String imagePath = String.format("C:\\Users\\Nabeel.Ahmed\\Downloads\\captcha\\%s.png", UUID.randomUUID());
 
@@ -81,6 +84,146 @@ public class RaadImageProcessingApi {
         } catch (Exception ex) {
             logger.error("imageTextReader -- Error occurred " + ex);
             return ResponseEntity.ok().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+        }
+    }
+
+    //http://mundrisoft.com/tech-bytes/compare-images-using-java/
+    @RequestMapping(path = "/imageReaderV1",  method = RequestMethod.POST)
+    public ResponseEntity<?> imageReaderV1(ImageCompare imageCompare) {
+        try {
+            response = new ResponseDTO();
+            // base image
+            BufferedImage bImage = ImageIO.read(imageCompare.getOldImage().getInputStream());
+            // compare image
+            BufferedImage cImage = ImageIO.read(imageCompare.getNewImage().getInputStream());
+            // height & width
+            int height = bImage.getHeight();
+            int width = bImage.getWidth();
+            // process image
+            BufferedImage rImage = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    try {
+                        int pixelC = cImage.getRGB(x, y);
+                        int pixelB = bImage.getRGB(x, y);
+                        if (pixelB == pixelC ) {
+                            rImage.setRGB(x, y,  bImage.getRGB(x, y));
+                        } else {
+                            int a= 0xff |  bImage.getRGB(x, y)>>24 ,
+                                    r= 0xff &  bImage.getRGB(x, y)>>16 ,
+                                    g= 0x00 &  bImage.getRGB(x, y)>>8,
+                                    b= 0x00 &  bImage.getRGB(x, y);
+
+                            int modifiedRGB=a<<24|r<<16|g<<8|b;
+                            rImage.setRGB(x,y,modifiedRGB);
+                        }
+                    } catch (Exception e) {
+                        // handled hieght or width mismatch
+                        rImage.setRGB(x, y, 0x80ff0000);
+                    }
+                }
+            }
+            // convert buffered image to image
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            String imgType = imageCompare.getOldImage().getOriginalFilename()
+                    .substring(imageCompare.getOldImage().getOriginalFilename().indexOf("."));
+            if (imgType.equalsIgnoreCase(PNG)) {
+                ImageIO.write(rImage, "png", baos);
+            } else {
+                ImageIO.write(rImage, "jpg", baos);
+            }
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            baos.flush();
+            response.setData(imageInByte);
+            response.setMessage("Image Process Result.");
+            return ResponseEntity.ok().body(response);
+        } catch (Exception ex) {
+            response.setMessage("Process Fail.");
+            response.setText("Some error occurs.");
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @RequestMapping(path = "/imageReaderV2",  method = RequestMethod.POST)
+    public ResponseEntity<?> imageReaderV2(ImageCompare imageCompare) {
+        try {
+            response = new ResponseDTO();
+            extData = new HashMap<>();
+            // base image
+            BufferedImage bImage = ImageIO.read(imageCompare.getOldImage().getInputStream());
+            // compare image
+            BufferedImage cImage = ImageIO.read(imageCompare.getNewImage().getInputStream());
+            //Create ImageComparison object for it.
+            ImageComparison imageComparison = new ImageComparison(bImage, cImage);
+            // oky
+            if(imageCompare.getThreshold() != null) {
+                imageComparison.setThreshold(imageCompare.getThreshold());
+            }
+            // oky
+            if(imageCompare.getRectangleLineWidth() != null) {
+                imageComparison.setRectangleLineWidth(imageCompare.getRectangleLineWidth());
+            }
+            // oky
+            if(imageCompare.getFillDifferenceRectangles() != null
+                    && imageCompare.getPercentOpacityDifferenceRectangles() != null) {
+                imageComparison.setDifferenceRectangleFilling(imageCompare.getFillDifferenceRectangles(),
+                        imageCompare.getPercentOpacityDifferenceRectangles());
+            }
+            if(imageCompare.getFillExcludedRectangles() != null && imageCompare.getPercentOpacityExcludedRectangles() != null) {
+                imageComparison.setExcludedRectangleFilling(imageCompare.getFillExcludedRectangles(),
+                        imageCompare.getPercentOpacityExcludedRectangles());
+            }
+            if(imageCompare.getDrawExcludedRectangles() != null) {
+                imageComparison.setDrawExcludedRectangles(imageCompare.getDrawExcludedRectangles());
+            }
+            if(imageCompare.getMaximalRectangleCount() != null) {
+                imageComparison.setMaximalRectangleCount(imageCompare.getMaximalRectangleCount());
+            }
+            if(imageCompare.getMinimalRectangleSize() != null) {
+                imageComparison.setMinimalRectangleSize(imageCompare.getMinimalRectangleSize());
+            }
+            if(imageCompare.getPixelToleranceLevel() != null) {
+                imageComparison.setPixelToleranceLevel(imageCompare.getPixelToleranceLevel());
+            }
+            if(imageCompare.getAllowingPercentOfDifferentPixels() != null) {
+                imageComparison.setAllowingPercentOfDifferentPixels(imageCompare.getAllowingPercentOfDifferentPixels());
+            }
+            //After configuring the ImageComparison object, can be executed compare() method:
+            ImageComparisonResult imageComparisonResult = imageComparison.compareImages();
+            // result
+            extData.put("Status", imageComparisonResult.getImageComparisonState());
+            if(imageComparisonResult.getRectangles() != null) {
+                extData.put("total_rect", imageComparisonResult.getRectangles().size());
+                extData.put("rect_size", imageComparisonResult.getRectangles()
+                        .stream().map(rectangle -> {
+                            return rectangle.size();
+                        }).collect(Collectors.toList()));
+            }
+            System.out.println(extData);
+            //And Result Image
+            BufferedImage resultImage = imageComparisonResult.getResult();
+            // convert buffered image to image
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            String imgType = imageCompare.getOldImage().getOriginalFilename()
+                    .substring(imageCompare.getOldImage().getOriginalFilename().indexOf("."));
+            if (imgType.equalsIgnoreCase(PNG)) {
+                ImageIO.write(resultImage, "png", baos);
+            } else {
+                ImageIO.write(resultImage, "jpg", baos);
+            }
+            byte[] imageInByte = baos.toByteArray();
+            baos.close();
+            baos.flush();
+            response.setData(imageInByte);
+            response.setMessage("Image Process Result.");
+            response.setExt(extData);
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception ex) {
+            response.setMessage("Process Fail.");
+            response.setText("Some error occurs.");
+            return ResponseEntity.badRequest().body(response);
         }
     }
 

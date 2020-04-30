@@ -37,20 +37,24 @@ public class RaadSocketApi {
     @RequestMapping(path = "/save", method = RequestMethod.POST)
     public ResponseEntity<?> save(@RequestBody List<FileInfoDto> fileInfoDtos) {
         try {
-            return ResponseEntity.ok().body(new ResponseDTO("Data Save", this.fileInfoDetailService.save(fileInfoDtos)));
+            return ResponseEntity.ok()
+                .body(new ResponseDTO("Data Save", this.fileInfoDetailService.save(fileInfoDtos)));
         } catch (Exception ex) {
             logger.error("/file/save " + ExceptionUtil.getRootCauseMessage(ex));
-            return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+            return ResponseEntity.badRequest()
+                .body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
         }
     }
 
     @RequestMapping(path = "/fetchDetail", method = RequestMethod.POST)
     public ResponseEntity<?> fetchDetail(@RequestParam("page") int page, @RequestParam("size") int size) {
         try {
-            return ResponseEntity.ok().body(new ResponseDTO("Data Fetch", this.fileInfoDetailService.fetchDetail(page, size)));
+            return ResponseEntity.ok()
+                .body(new ResponseDTO("Data Fetch", this.fileInfoDetailService.fetchDetail(page, size)));
         } catch (Exception ex) {
             logger.error("/get/file_detail " + ExceptionUtil.getRootCauseMessage(ex));
-            return ResponseEntity.badRequest().body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
+            return ResponseEntity.badRequest()
+                .body(new ResponseDTO(ExceptionUtil.getRootCauseMessage(ex), null));
         }
     }
 

@@ -7,6 +7,7 @@ public class ResponseDTO {
     private String text;
     private String message;
     private Object data;
+    private Object ext;
 
     public ResponseDTO() { }
 
@@ -23,6 +24,9 @@ public class ResponseDTO {
 
     public Object getData() { return data; }
     public void setData(Object data) { this.data = data; }
+
+    public Object getExt() { return ext; }
+    public void setExt(Object ext) { this.ext = ext; }
 
     @Override
     public String toString() { return new Gson().toJson(this); }
