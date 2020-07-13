@@ -41,6 +41,9 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     private String html = "<!DOCTYPE html>\n" + "<html>\n" + "\t<head>\n" + "\t</head>\n" +
             "<body>\n" + "<p>%s</p>\n" + "</body>\n" + "</html>\n";
 
+    private String[] search = {"tempfile_362.xlsx"};
+    private String[] replace = {""};
+
     private static volatile boolean isRDInitialized = false;
     @Autowired
     private OfficeManager officeManager;
@@ -54,8 +57,10 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     public void init() {
         if(!isRDInitialized) {
             logger.info("Office Manager Init");
-            this.converter = LocalConverter.builder().storeProperties(getStoreProperties())
-                    .officeManager(officeManager).build();
+            this.converter = LocalConverter.builder()
+                    //.filterChain(new TextReplacerFilter(search, replace))
+                    .storeProperties(getStoreProperties())
+                .officeManager(officeManager).build();
             logger.info("Office Manager End");
             isRDInitialized = true;
         }
@@ -101,9 +106,10 @@ public class RaadStreamConverter implements IRaadStreamConverter {
     private HashMap<String, Object> getFilterData() {
         HashMap<String, Object> filterDate = new HashMap<>();
 //        filterDate.put(IsSkipEmptyPages, new Boolean(true));
-//        filterDate.put(SelectPdfVersion, new Integer(1));
+//        filterDate.put(SelectPdfVersion, new Integer(16));
         filterDate.put(ExportBookmarks, false);
         filterDate.put(ExportNotes, false);
+        //filterDate.put("TiledWatermark", false);
         return filterDate;
     }
 
@@ -155,6 +161,27 @@ public class RaadStreamConverter implements IRaadStreamConverter {
             throw new Exception("File Not Convert In given time");
         }
 
+    }
+
+
+    public static void main(String args[]) {
+        String text1 = "Pakistan Zindabad tempfile_154.doc";
+        String text2 = "Pakistan Zindabad tempfile_14.doc";
+        String[] removePattern = { "tempfile_\\d+[.]docx", "tempfile_\\d+[.]doc", "tempfile_\\d+[.]pptx", "tempfile_\\d+[.]ppt",
+                "tempfile_\\d+[.]xlsx", "tempfile_\\d+[.]xlx"};
+        text1 = text1.replaceAll(removePattern[0], "").replaceAll(removePattern[1], "")
+                .replaceAll(removePattern[2], "").replaceAll(removePattern[3], "")
+                .replaceAll(removePattern[4], "").replaceAll(removePattern[5], "");
+        text2 = text2.replaceAll(removePattern[0], "").replaceAll(removePattern[1], "")
+                .replaceAll(removePattern[2], "").replaceAll(removePattern[3], "")
+                .replaceAll(removePattern[4], "").replaceAll(removePattern[5], "");
+        System.out.println(text1);
+        System.out.println(text2);
+        if(text1.equals(text2)) {
+            System.out.println("Both Match");
+        } else {
+            System.out.println("Difference found");
+        }
     }
 
 }

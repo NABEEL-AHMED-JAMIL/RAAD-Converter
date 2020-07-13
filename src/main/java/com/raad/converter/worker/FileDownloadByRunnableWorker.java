@@ -30,10 +30,10 @@ public class FileDownloadByRunnableWorker implements Runnable {
     private List<FileInfo> fileInfos;
     private String token;
 
-    private static String region = "ap-1";
-    private static String accessKey = "A-F";
-    private static String secretKey = "I-b";
-    private static String bucketName = "r-t";
+    private static String region = "ap-south-1";
+    private static String accessKey = "AKIAWGCIEXNOMZ5Q57FF";
+    private static String secretKey = "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";
+    private static String bucketName = "raad-dev-test";
 
     @Autowired
     private SocketServerComponent socketServerComponent;

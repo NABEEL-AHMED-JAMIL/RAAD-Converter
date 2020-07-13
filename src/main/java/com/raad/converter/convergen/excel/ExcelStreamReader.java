@@ -1,6 +1,7 @@
 package com.raad.converter.convergen.excel;
 
 import com.raad.converter.convergen.ScraperConstant;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -8,7 +9,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFPrintSetup;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTSheetView;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -17,18 +17,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Iterator;
 
-import static org.apache.poi.ss.usermodel.PrintSetup.*;
-
 
 @Component
 @Scope(value="prototype")
 public class ExcelStreamReader implements Excel {
+
+    private String TODAY = "TODAY()";
 
     public InputStream getExcelStream(String sourceFileName, InputStream inputStream,
         ByteArrayOutputStream bos) throws Exception {
         // stream re-order to fit the all content
         if(sourceFileName.contains(ScraperConstant.XLSX_EXTENSION)) {
             XSSFWorkbook xssfWorkbook = (XSSFWorkbook) WorkbookFactory.create(inputStream);
+            FormulaEvaluator evaluator = xssfWorkbook.getCreationHelper().createFormulaEvaluator();
             Iterator iterator = xssfWorkbook.sheetIterator();
             while (iterator.hasNext()) {
                 XSSFSheet xssfSheet = (XSSFSheet) iterator.next();
@@ -45,6 +46,7 @@ public class ExcelStreamReader implements Excel {
             xssfWorkbook.close();
         } else {
             HSSFWorkbook xlsWorkbook = (HSSFWorkbook) WorkbookFactory.create(inputStream);
+            FormulaEvaluator evaluator = xlsWorkbook.getCreationHelper().createFormulaEvaluator();
             Iterator iterator = xlsWorkbook.sheetIterator();
             while (iterator.hasNext()) {
                 HSSFSheet hssfSheet =  (HSSFSheet) iterator.next();
@@ -75,6 +77,15 @@ public class ExcelStreamReader implements Excel {
                     if (comment != null) {
                         System.out.println("Comment :- " + comment.getString());
                         cell.removeCellComment();
+                    }
+                    if (cell != null) {
+                        if (cell.getCellType() == CellType.FORMULA) {
+                            if(cell.getCellFormula().equalsIgnoreCase(TODAY)) {
+                                cell.setCellType(CellType.STRING);
+                                cell.setCellValue("Mac-Date");
+                            }
+
+                        }
                     }
                 }
             }
