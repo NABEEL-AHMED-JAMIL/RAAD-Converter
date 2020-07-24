@@ -30,14 +30,6 @@ logging:
 file:
     downloadLocation: \tmp
 ---
-server:
-    port: 9098
-    servlet:
-        context-path: /api/converter
----
-# ===============================
-# = DATA SOURCE
-# ===============================
 spring:
     datasource:
         url: jdbc:postgresql://localhost:5432/barcoFire
@@ -60,3 +52,35 @@ spring:
     jackson:
         serialization:
             fail-on-empty-beans: false
+---
+# d'nt remove this comment
+#https://segmentfault.com/a/1190000015129654
+#https://docs.alfresco.com/6.0/tasks/OOo-subsystems-config.html
+#https://docs.alfresco.com/6.0/concepts/OOoJodconverter-subsystem-props.html
+#//https://github.com/LibreOffice/core/blob/master/filter/source/pdf/pdfexport.cxx#L459
+#jodconverter.connectTimeout=20000
+jodconverter:
+    local:
+        enabled: true
+        port-numbers: 2004
+        kill-existing-process: true
+        process-timeout: 180000
+        process-retry-interval: 1000
+        max-tasks-per-process: 20
+        task-execution-timeout: 140000
+        task-queue-timeout: 90000
+        working-dir: /tmp
+        format-options:
+            html:
+                store:
+                    TEXT:
+                        FilterOptions: EmbedImages
+---
+socket:
+    host: 0.0.0.0
+    port: 889
+---
+server:
+    port: 9098
+    servlet:
+        context-path: /api/converter

@@ -5,5 +5,6 @@ import java.io.InputStream;
 
 public interface Excel {
 
-    public InputStream getExcelStream(String sourceFileName, InputStream inputStream, ByteArrayOutputStream bos) throws Exception;
+    public InputStream getExcelStream(String sourceFileName,
+                      InputStream inputStream, ByteArrayOutputStream bos) throws Exception;
 }

@@ -12,7 +12,9 @@ public class ExceptionUtil {
 		return rootCause;
 	}
 
-	public static String getRootCauseMessage(final Throwable throwable) { return getRootCause(throwable).toString(); }
+	public static String getRootCauseMessage(final Throwable throwable) {
+		return getRootCause(throwable).toString();
+	}
 
 	private static List<Throwable> getThrowableList(Throwable throwable) {
 		final List<Throwable> list = new ArrayList<Throwable>();

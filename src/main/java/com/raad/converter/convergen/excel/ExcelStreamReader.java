@@ -1,14 +1,8 @@
 package com.raad.converter.convergen.excel;
 
-import com.raad.converter.convergen.ScraperConstant;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFPrintSetup;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -23,45 +17,25 @@ import java.util.Iterator;
 public class ExcelStreamReader implements Excel {
 
     private String TODAY = "TODAY()";
+    public final String MAC_TODAY = "May 6, 2000";
 
     public InputStream getExcelStream(String sourceFileName, InputStream inputStream,
         ByteArrayOutputStream bos) throws Exception {
         // stream re-order to fit the all content
-        if(sourceFileName.contains(ScraperConstant.XLSX_EXTENSION)) {
-            XSSFWorkbook xssfWorkbook = (XSSFWorkbook) WorkbookFactory.create(inputStream);
-            FormulaEvaluator evaluator = xssfWorkbook.getCreationHelper().createFormulaEvaluator();
-            Iterator iterator = xssfWorkbook.sheetIterator();
-            while (iterator.hasNext()) {
-                XSSFSheet xssfSheet = (XSSFSheet) iterator.next();
-                disableComments(xssfSheet);
-                xssfSheet.setFitToPage(true);
-                xssfSheet.setAutobreaks(true);
-                XSSFPrintSetup printSetup = xssfSheet.getPrintSetup();
-                printSetup.setFitWidth((short) 1);
-                printSetup.setFitHeight((short) 0);
-                //printSetup.setPaperSize(A4_EXTRA_PAPERSIZE);
-            }
-            xssfWorkbook.write(bos);
-            inputStream = new ByteArrayInputStream(bos.toByteArray());
-            xssfWorkbook.close();
-        } else {
-            HSSFWorkbook xlsWorkbook = (HSSFWorkbook) WorkbookFactory.create(inputStream);
-            FormulaEvaluator evaluator = xlsWorkbook.getCreationHelper().createFormulaEvaluator();
-            Iterator iterator = xlsWorkbook.sheetIterator();
-            while (iterator.hasNext()) {
-                HSSFSheet hssfSheet =  (HSSFSheet) iterator.next();
-                disableComments(hssfSheet);
-                hssfSheet.setFitToPage(true);
-                hssfSheet.setAutobreaks(true);
-                HSSFPrintSetup hssfPrintSetup = hssfSheet.getPrintSetup();
-                hssfPrintSetup.setFitWidth((short) 1);
-                hssfPrintSetup.setFitHeight((short) 0);
-                //hssfPrintSetup.setPaperSize(A4_EXTRA_PAPERSIZE);
-            }
-            xlsWorkbook.write(bos);
-            inputStream = new ByteArrayInputStream(bos.toByteArray());
-            xlsWorkbook.close();
+        Workbook workbook = WorkbookFactory.create(inputStream);
+        Iterator iterator = workbook.sheetIterator();
+        while (iterator.hasNext()) {
+            Sheet sheet = (Sheet) iterator.next();
+            disableComments(sheet);
+            sheet.setFitToPage(true);
+            sheet.setAutobreaks(true);
+            PrintSetup printSetup = sheet.getPrintSetup();
+            printSetup.setFitWidth((short) 1);
+            printSetup.setFitHeight((short) 0);
         }
+        workbook.write(bos);
+        inputStream = new ByteArrayInputStream(bos.toByteArray());
+        workbook.close();
         return inputStream;
     }
 
@@ -82,7 +56,7 @@ public class ExcelStreamReader implements Excel {
                         if (cell.getCellType() == CellType.FORMULA) {
                             if(cell.getCellFormula().equalsIgnoreCase(TODAY)) {
                                 cell.setCellType(CellType.STRING);
-                                cell.setCellValue("Mac-Date");
+                                cell.setCellValue(MAC_TODAY);
                             }
 
                         }
