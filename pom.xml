@@ -37,7 +37,7 @@
 		<java.version>1.8</java.version>
 		<jodconverter.version>4.2.2</jodconverter.version>
 		<swagger.version>2.9.2</swagger.version>
-		<commons-net.version>3.6</commons-net.version>
+		<commons-net.version>3.9.0</commons-net.version>
 	</properties>
 
 	<!--https://mvnrepository.com/artifact/org.jodconverter-->
